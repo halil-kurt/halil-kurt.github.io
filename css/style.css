@@ -5,7 +5,7 @@
     --text-color: #31823f;
 }
 
-html {
+* {
     padding: 0px;
     margin: 0px;
     box-sizing: border-box;
