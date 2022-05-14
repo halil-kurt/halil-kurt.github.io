@@ -22,11 +22,11 @@ a {
 }
 
 body {
-    height: 95vh;
+    height: 85vh;
 }
 
 img {
-    width: 95%;
+    width: 85%;
     height: auto;
 }
 
@@ -35,6 +35,7 @@ img {
 }
 
 /* Header --  Start*/
+
 header {
     width: 100%;
     height: 100%;
@@ -82,7 +83,7 @@ header .container {
 
 .content {
     margin: 0px auto;
-    margin-left: 2rem;
+    padding-left: 1.5rem;
 }
 
 
@@ -264,10 +265,11 @@ footer li {
         align-items: center;
     }
 
-    .header-image{
+    .header-image {
         margin-top: 0rem;
     }
-    .header-item{
+
+    .header-item {
         margin-top: 5rem;
     }
 
@@ -278,7 +280,7 @@ footer li {
     .card-container {
         max-width: 60%;
     }
-    
+
 }
 
 @media screen and (min-width: 768px) {
@@ -307,6 +309,7 @@ footer li {
     .projects .title {
         font-size: 2.6rem;
     }
+
     .card-container img {
         opacity: 0.8;
     }

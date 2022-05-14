@@ -39,6 +39,33 @@ const handelMovement = (direction) => {
     };
 };
 
+let swipe = [];
+let handleTouch = (event) => {
+    if (event.type === "touchmove") {
+        swipe.push(event.touches[0].clientY)
+    }
+
+    // kaydırma işlemi biterse
+
+    if (swipe.length > 2) {
+        if (event.type === "touchend") {
+            // dokunmatik ekranda yukarıya doğru kaydırılmışsa
+            if (swipe[0] > swipe[swipe.length - 1]) {
+                handelMovement("down");
+                swipe = [];
+            }
+
+            // dokunmatik ekranda yukarıya doğru kaydırılmışsa
+            if (swipe[0] < swipe[swipe.length - 1]) {
+                handelMovement("up");
+                swipe = [];
+            }
+        }
+    }
+
+    console.log(swipe);
+}
+
 const toggleVisibility = (curentItem, nextItem) => {
     // şuanki elemanı görünmez bir sonraki elemanı görünür yap
     headerItems[curentItem].classList.add("hide");
@@ -57,7 +84,7 @@ const createElement = () => {
             <div class = "card-container">
                 <div class="card">
                     <div class="card-content">
-                       <img src="/images/codeTyping.png" alt="img">
+                       <img src="images/codeTyping.png" alt="img">
                         <h2 class="card-title">header</h2>
                         <p class="card-body">
                         Lorem ipsum dolor sit amet consectetur adipisicing.
@@ -70,7 +97,7 @@ const createElement = () => {
             <div class = "card-container">
                 <div class="card">
                     <div class="card-content">
-                       <img src="/images/codeTyping.png" alt="img">
+                       <img src="images/codeTyping.png" alt="img">
                         <h2 class="card-title">header</h2>
                         <p class="card-body">
                         Lorem ipsum dolor sit amet consectetur adipisicing.
@@ -83,7 +110,7 @@ const createElement = () => {
             <div class = "card-container">
                 <div class="card">
                     <div class="card-content">
-                       <img src="/images/codeTyping.png" alt="img">
+                       <img src="images/codeTyping.png" alt="img">
                         <h2 class="card-title">header</h2>
                         <p class="card-body">
                         Lorem ipsum dolor sit amet consectetur adipisicing.
@@ -96,7 +123,7 @@ const createElement = () => {
             <div class = "card-container">
                 <div class="card">
                     <div class="card-content">
-                       <img src="/images/codeTyping.png" alt="img">
+                       <img src="images/codeTyping.png" alt="img">
                         <h2 class="card-title">header</h2>
                         <p class="card-body">
                         Lorem ipsum dolor sit amet consectetur adipisicing.
@@ -134,3 +161,8 @@ header.addEventListener("wheel", (event) => {
         scrolCounter = 0;
     };
 });
+
+// dokunmatik ekranlar için kaydırma olayını ezleme
+//header.addEventListener("touchstart", handleTouch)
+header.addEventListener("touchend", handleTouch)
+header.addEventListener("touchmove", handleTouch)
