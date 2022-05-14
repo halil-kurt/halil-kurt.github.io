@@ -215,3 +215,38 @@ header .container {
 }
 
 /*projects    Ends*/
+
+/*Footer Start*/
+footer {
+    padding: 3rem 0rem 2rem 0rem;
+    background-color: var(--text-color);
+    border-top-left-radius: 50%;
+    border-top-right-radius: 50%;
+    text-align: center;
+}
+
+footer .container {
+    width: 100%;
+    position: absolute;
+    background-color: inherit;
+}
+
+footer ol {
+    background-color: transparent;
+    width: 100%;
+}
+
+footer li {
+    list-style: none;
+    display: inline-block;
+    padding: 1rem;
+    border-radius: 50%;
+    margin: 2rem 2rem 2rem 0rem;
+}
+
+.line {
+    width: 100%;
+    height: 10px;
+}
+
+/*Footer End*/
