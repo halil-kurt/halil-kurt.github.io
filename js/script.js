@@ -1,3 +1,4 @@
+let footer = document.querySelector("footer");
 const section = document.querySelector("section");
 const textItems = document.querySelectorAll(".header-text");
 const profileImg = document.querySelector(".header-image");
@@ -106,6 +107,7 @@ const createElement = () => {
             </div>
         </div>
     `
+        footer.classList.remove("hide");
         section.appendChild(myProjects);
         canCreateElement = false;
     };
@@ -115,6 +117,7 @@ const createElement = () => {
 // projeler kısmını sil
 const removeElement = () => {
     section.removeChild(section.firstElementChild);
+    footer.classList.add("hide");
     canCreateElement = true;
 };
 
