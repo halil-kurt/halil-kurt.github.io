@@ -70,9 +70,11 @@ header .container {
     text-align: left;
     font-style: italic;
 }
-.text-container{
+
+.text-container {
     margin-top: 6rem;
 }
+
 .header-text * {
     width: 100%;
     height: 100%;
@@ -240,17 +242,34 @@ footer ol {
     width: 100%;
 }
 
-footer li {
-    list-style: none;
-    display: inline-block;
-    padding: 1rem;
-    border-radius: 50%;
-    margin: 2rem 2rem 2rem 0rem;
-}
-
 .line {
     width: 100%;
     height: 10px;
+}
+
+footer li {
+    list-style: none;
+    display: inline-block;
+    margin: 2rem 2rem 2rem 0rem;
+    padding: 0.2rem;
+    border-radius: 50%;
+}
+
+
+footer img {
+    width: 40px;
+    border-radius: 50%;
+}
+footer img:hover{
+    opacity: 1;
+}
+
+footer a {
+    background-color: var(--main-bg-color);
+    border-radius: 50%;
+}
+footer a:focus{
+    color: red;
 }
 
 /*Footer End*/
@@ -309,8 +328,7 @@ footer li {
     .projects .title {
         font-size: 2.6rem;
     }
-
-    .card-container img {
+    .card-container img, footer img{
         opacity: 0.8;
     }
 }
@@ -338,6 +356,10 @@ footer li {
     .projects .title {
         font-size: 2.8rem;
     }
+    footer img {
+        width: 55px;
+        border-radius: 50%;
+    }
 
 }
 
@@ -362,6 +384,10 @@ footer li {
 
     .projects .title {
         font-size: 3rem;
+    }
+    footer img {
+        width: 60px;
+        border-radius: 50%;
     }
 
 }
