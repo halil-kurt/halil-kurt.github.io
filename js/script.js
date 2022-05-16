@@ -1,11 +1,11 @@
+import * as scroll from "./scroll.js";
+
 let footer = document.querySelector("footer");
 const section = document.querySelector("section");
 const textItems = document.querySelectorAll(".header-text");
 const profileImg = document.querySelector(".header-image");
 const header = document.querySelector("header");
 const headerItems = [profileImg, ...textItems];
-let canCreateElement = true;
-
 
 
 let itemNumber = 1;
@@ -26,7 +26,6 @@ const handelMovement = (direction) => {
         if (itemNumber === headerItems.length - 1) {
             createElement();
         }
-
     }
     else if (direction === "up") {
         if (itemNumber > 2) {
@@ -46,7 +45,6 @@ let handleTouch = (event) => {
     }
 
     // kaydırma işlemi biterse
-
     if (swipe.length > 2) {
         if (event.type === "touchend") {
             // dokunmatik ekranda yukarıya doğru kaydırılmışsa
@@ -60,11 +58,9 @@ let handleTouch = (event) => {
                 handelMovement("up");
                 swipe = [];
             }
-        }
-    }
-
-    console.log(swipe);
-}
+        };
+    };
+};
 
 const toggleVisibility = (curentItem, nextItem) => {
     // şuanki elemanı görünmez bir sonraki elemanı görünür yap
@@ -74,78 +70,15 @@ const toggleVisibility = (curentItem, nextItem) => {
 
 // projeleri kullanıcıya göster
 const createElement = () => {
-    if (canCreateElement) {
-        let myProjects = ``;
-        myProjects = document.createElement("myProjects");
-        myProjects.innerHTML = `
-        <h1 class="title"> My Projects</h1>
-        <div class="container">
-
-            <div class = "card-container">
-                <div class="card">
-                    <div class="card-content">
-                       <img src="images/codeTyping.png" alt="img">
-                        <h2 class="card-title">header</h2>
-                        <p class="card-body">
-                        Lorem ipsum dolor sit amet consectetur adipisicing.
-                        </p>
-                        <a href="#" target="_blank" class="button">take a look</a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class = "card-container">
-                <div class="card">
-                    <div class="card-content">
-                       <img src="images/codeTyping.png" alt="img">
-                        <h2 class="card-title">header</h2>
-                        <p class="card-body">
-                        Lorem ipsum dolor sit amet consectetur adipisicing.
-                        </p>
-                        <a href="#" target="_blank" class="button">take a look</a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class = "card-container">
-                <div class="card">
-                    <div class="card-content">
-                       <img src="images/codeTyping.png" alt="img">
-                        <h2 class="card-title">header</h2>
-                        <p class="card-body">
-                        Lorem ipsum dolor sit amet consectetur adipisicing.
-                        </p>
-                        <a href="#" target="_blank" class="button">take a look</a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class = "card-container">
-                <div class="card">
-                    <div class="card-content">
-                       <img src="images/codeTyping.png" alt="img">
-                        <h2 class="card-title">header</h2>
-                        <p class="card-body">
-                        Lorem ipsum dolor sit amet consectetur adipisicing.
-                        </p>
-                        <a href="#" target="_blank" class="button">take a look</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `
-        footer.classList.remove("hide");
-        section.appendChild(myProjects);
-        canCreateElement = false;
-    };
+    section.classList.remove("hide");
+    footer.classList.remove("hide");
 };
 
 
 // projeler kısmını sil
 const removeElement = () => {
-    section.removeChild(section.firstElementChild);
+    section.classList.add("hide");
     footer.classList.add("hide");
-    canCreateElement = true;
 };
 
 
@@ -166,3 +99,8 @@ header.addEventListener("wheel", (event) => {
 //header.addEventListener("touchstart", handleTouch)
 header.addEventListener("touchend", handleTouch)
 header.addEventListener("touchmove", handleTouch)
+
+
+window.addEventListener("scroll", () => {
+    scroll.handleScrollAnimation();
+});
