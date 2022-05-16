@@ -103,30 +103,33 @@ header .container {
 @keyframes translate {
     0% {
         -webkit-transform: translateX(-100px);
+        -moz-transform: translateX(-100px);
         transform: translateX(-100px);
         opacity: 0;
     }
 
     100% {
         -webkit-transform: translateX(0);
+        -moz-transform: translateX(0);
         transform: translateX(0);
         opacity: 1;
     }
 }
 
 /* The element to apply the animation to */
-.header-item p:nth-child(2) {
+
+.header-item p {
     animation-name: translate;
     animation-duration: 2.5s;
-    animation-delay: 0s;
     animation-fill-mode: both;
 }
 
+.header-item p:nth-child(2) {
+    animation-delay: 0s;
+}
+
 .header-item p:nth-child(3) {
-    animation-name: translate;
-    animation-duration: 2.5s;
     animation-delay: 1s;
-    animation-fill-mode: both;
 }
 
 /* Header --  End */
@@ -192,11 +195,13 @@ header .container {
 .card-content p {
     font-size: 1.2rem;
     padding-bottom: 1rem;
+    background-color: transparent;
 }
 
 .card-container h2 {
     font-size: 1.4rem;
     margin-bottom: 0.5rem;
+    background-color: transparent;
 }
 
 .card-container h2::after {
@@ -219,6 +224,21 @@ header .container {
     border-color: var(--primary-color);
     color: inherit;
 }
+
+.scrolled h2 {
+    animation-name: translate;
+    animation-duration: 2s;
+    animation-delay: 0s;
+    animation-fill-mode: both;
+}
+
+.scrolled p {
+    animation-name: translate;
+    animation-duration: 2.7s;
+    animation-delay: 0.5s;
+    animation-fill-mode: both;
+}
+
 
 /*projects    Ends*/
 
@@ -260,7 +280,8 @@ footer img {
     width: 40px;
     border-radius: 50%;
 }
-footer img:hover{
+
+footer img:hover {
     opacity: 1;
 }
 
@@ -268,8 +289,51 @@ footer a {
     background-color: var(--main-bg-color);
     border-radius: 50%;
 }
-footer a:focus{
+
+footer a:focus {
     color: red;
+}
+
+@keyframes wave {
+    0% {
+        -webkit-transform: translateY(0px);
+        -moz-transform: translateY(0px);
+        transform: translateY(0px);
+    }
+
+    50% {
+        -webkit-transform: translateY(-30px);
+        -moz-transform: translateY(-30px);
+        transform: translateY(-30px);
+    }
+
+    100% {
+        -webkit-transform: translateY(0px);
+        -moz-transform: translateY(0px);
+        transform: translateY(0px);
+    }
+}
+
+.social-icons.scrolled li {
+    animation-name: wave;
+    animation-duration: 2s;
+    animation-timing-function: linear;
+}
+
+.social-icons.scrolled li:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.social-icons.scrolled li:nth-child(2) {
+    animation-delay: 0.5s;
+}
+
+.social-icons.scrolled li:nth-child(3) {
+    animation-delay: 1s;
+}
+
+.social-icons.scrolled li:nth-child(4) {
+    animation-delay: 1.5s;
 }
 
 /*Footer End*/
@@ -328,7 +392,9 @@ footer a:focus{
     .projects .title {
         font-size: 2.6rem;
     }
-    .card-container img, footer img{
+
+    .card-container img,
+    footer img {
         opacity: 0.8;
     }
 }
@@ -356,6 +422,7 @@ footer a:focus{
     .projects .title {
         font-size: 2.8rem;
     }
+
     footer img {
         width: 55px;
         border-radius: 50%;
@@ -385,6 +452,7 @@ footer a:focus{
     .projects .title {
         font-size: 3rem;
     }
+
     footer img {
         width: 60px;
         border-radius: 50%;
