@@ -12,7 +12,9 @@ let platform = new Image();
 platform.src = "images/platform.png";
 let backround = new Image();
 backround.src = "images/BG.png";
-
+//trees
+let treeImg = new Image();
+treeImg.src = "images/tree_1.png";
 
 // create player
 class Player {
@@ -80,6 +82,20 @@ class Background {
     };
 };
 
+class Tree {
+    constructor({ x, y, treeImg }) {
+        this.position = {
+            x,
+            y
+        };
+        this.treeImg = treeImg;
+        this.width = treeImg.width;
+        this.height = treeImg.height;
+    }
+    draw() {
+        c.drawImage(this.treeImg, this.position.x, this.position.y);
+    };
+};
 
 let player = new Player();
 // create platform 
@@ -88,6 +104,10 @@ let platforms = [
     new Platform({ x: platform.width - 2, y: canvas.height - 75, platform }),
     new Platform({ x: platform.width * 2 + 100, y: canvas.height - 75, platform }),
     new Platform({ x: platform.width * 3 + 200, y: canvas.height - 75, platform }),
+];
+
+let trees = [
+    new Tree({ x: 0, y: canvas.height - treeImg.height - 75, treeImg })
 ];
 
 let backgrounds = [new Background({ x: 0, y: 0, backround })];
@@ -115,6 +135,9 @@ let init = () => {
     backgrounds = [
         new Background({ x: 0, y: 0, backround })
     ];
+    let trees = [
+        new Tree({ x: 0, y: canvas.height - treeImg.height - 75, treeImg })
+    ];
 
     // platforms Curent x position
     scrollOfset = 0;
@@ -127,7 +150,11 @@ let animate = () => {
 
     backgrounds.forEach(genericObject => {
         genericObject.draw()
-    })
+    });
+
+    trees.forEach((tree) => {
+        tree.draw();
+    });
 
     // draw platforms
     platforms.forEach((platform) => {
@@ -149,12 +176,20 @@ let animate = () => {
             platforms.forEach((platform) => {
                 platform.position.x -= player.speed;
             });
+
+            trees.forEach((tree) => {
+                tree.position.x -= player.speed * 0.58;
+            });
         }
         else if (keys.left.pressed) {
             // move the platform to the right
             scrollOfset -= player.speed;
             platforms.forEach((platform) => {
                 platform.position.x += player.speed;
+            });
+
+            trees.forEach((tree) => {
+                tree.position.x += player.speed * 0.58;
             });
         };
     };
