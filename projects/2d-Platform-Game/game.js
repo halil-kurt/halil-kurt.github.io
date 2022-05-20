@@ -69,7 +69,7 @@ class Background {
     constructor({ x, y, backround }) {
         this.position = {
             x,
-            y 
+            y
         }
         this.backround = backround;
         this.width = backround.width;
@@ -158,6 +158,19 @@ let animate = () => {
             });
         };
     };
+
+    // collision detection
+    platforms.forEach((platform) => {
+        if (player.position.y + player.height <=
+            platform.position.y &&
+            player.position.y + player.height +
+            player.velocity.y >= platform.position.y
+            && player.position.x + player.width >=
+            platform.position.x && player.position.x
+            <= platform.position.x + platform.width) {
+            player.velocity.y = 0;
+        };
+    });
 
     // lose senarion
     if (player.position.y > canvas.height) {
