@@ -97,20 +97,10 @@ class Tree {
     };
 };
 
-let player = new Player();
-// create platform 
-let platforms = [
-    new Platform({ x: 0, y: canvas.height - 75, platform }),
-    new Platform({ x: platform.width - 2, y: canvas.height - 75, platform }),
-    new Platform({ x: platform.width * 2 + 100, y: canvas.height - 75, platform }),
-    new Platform({ x: platform.width * 3 + 200, y: canvas.height - 75, platform }),
-];
-
-let trees = [
-    new Tree({ x: 0, y: canvas.height - treeImg.height - 75, treeImg })
-];
-
-let backgrounds = [new Background({ x: 0, y: 0, backround })];
+let player = new Player(); 
+let platforms = []
+let hills = []
+let backgrounds = []
 
 const keys = {
     right: {
@@ -135,7 +125,7 @@ let init = () => {
     backgrounds = [
         new Background({ x: 0, y: 0, backround })
     ];
-    let trees = [
+    trees = [
         new Tree({ x: 0, y: canvas.height - treeImg.height - 75, treeImg })
     ];
 
@@ -148,8 +138,8 @@ let animate = () => {
     c.fillStyle = "white";
     c.fillRect(0, 0, canvas.width, canvas.height);
 
-    backgrounds.forEach(genericObject => {
-        genericObject.draw()
+    backgrounds.forEach(bg => {
+        bg.draw()
     });
 
     trees.forEach((tree) => {
@@ -166,7 +156,9 @@ let animate = () => {
     // right and left movement
     if (keys.right.pressed && player.position.x < 400) {
         player.velocity.x = player.speed;
-    } else if (keys.left.pressed && player.position.x > 100) {
+    } else if (keys.left.pressed && player.position.x > 100
+        || keys.left.pressed && scrollOfset === 0
+        && player.position.x > 0) {
         player.velocity.x = - player.speed;
     } else {
         player.velocity.x = 0;
@@ -181,7 +173,7 @@ let animate = () => {
                 tree.position.x -= player.speed * 0.58;
             });
         }
-        else if (keys.left.pressed) {
+        else if (keys.left.pressed && scrollOfset > 0) {
             // move the platform to the right
             scrollOfset -= player.speed;
             platforms.forEach((platform) => {
@@ -206,13 +198,17 @@ let animate = () => {
             player.velocity.y = 0;
         };
     });
-
+     // win senario
+     if (scrollOfset > 2000) {
+        console.log("you win");
+    };
     // lose senarion
     if (player.position.y > canvas.height) {
         init();
     };
 }
-animate()
+init();
+animate();
 
 addEventListener("keydown", ({ keyCode }) => {
     switch (keyCode) {
