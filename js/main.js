@@ -24,7 +24,7 @@ const handelMovement = (direction) => {
             itemNumber++;
         };
         if (itemNumber === headerItems.length - 1) {
-            createElement();
+            toggleElements(section, footer, "show");
         }
     }
     else if (direction === "up") {
@@ -33,7 +33,7 @@ const handelMovement = (direction) => {
             itemNumber--;
         };
         if (itemNumber === headerItems.length - 2) {
-            removeElement();
+            toggleElements(section, footer, "hide");
         }
     };
 };
@@ -53,7 +53,7 @@ let handleTouch = (event) => {
                 swipe = [];
             }
 
-            // dokunmatik ekranda yukarıya doğru kaydırılmışsa
+            // dokunmatik ekranda aşağıya doğru kaydırılmışsa
             if (swipe[0] < swipe[swipe.length - 1]) {
                 handelMovement("up");
                 swipe = [];
@@ -68,19 +68,17 @@ const toggleVisibility = (curentItem, nextItem) => {
     headerItems[nextItem].classList.remove("hide");
 };
 
-// projeleri kullanıcıya göster
-const createElement = () => {
-    section.classList.remove("hide");
-    footer.classList.remove("hide");
+// projeler ve footer kısımlarını gizle veya göster
+const toggleElements = (section, footer, command) => {
+    if (command === "show") {
+        section.classList.remove("hide");
+        footer.classList.remove("hide");
+    }
+    else if (command === "hide") {
+        section.classList.add("hide");
+        footer.classList.add("hide");
+    }
 };
-
-
-// projeler kısmını sil
-const removeElement = () => {
-    section.classList.add("hide");
-    footer.classList.add("hide");
-};
-
 
 // y ekseninde mouse tekerleğini izleme 
 let scrolCounter = 0; // mouse tekerleğinin hasasiyetini azaltmak için kullanılacak
