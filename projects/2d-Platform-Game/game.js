@@ -11,10 +11,16 @@ let scrollOfset = 0;
 let platform = new Image();
 platform.src = "images/platform.png";
 let backround = new Image();
-backround.src = "images/BG.png";
+backround.src = "wintertileset/BG/BG.png";
 //trees
 let treeImg = new Image();
-treeImg.src = "images/tree_1.png";
+treeImg.src = "wintertileset/Object/tree_1.png";
+//Object
+let lgloo2 = new Image();
+lgloo2.src = "wintertileset/Object/Igloo2.png";
+let sign2 = new Image();
+sign2.src = "wintertileset/Object/Sign_2.png";
+
 
 // create player
 class Player {
@@ -66,7 +72,6 @@ class Platform {
     };
 };
 
-
 class Background {
     constructor({ x, y, backround }) {
         this.position = {
@@ -97,10 +102,26 @@ class Tree {
     };
 };
 
+class Object {
+    constructor({ x, y, width, height, obj }) {
+        this.position = {
+            x,
+            y 
+        };
+        this.obj = obj;
+        this.width = width;
+        this.height = height;
+    };
+    draw() {
+        c.drawImage(this.obj, this.position.x, this.position.y, this.width, this.height);
+    };
+};
+
 let player = new Player(); 
-let platforms = []
-let hills = []
-let backgrounds = []
+let platforms = [];
+let hills = [];
+let backgrounds = [];
+let objs = [];
 
 const keys = {
     right: {
@@ -122,6 +143,11 @@ let init = () => {
         new Platform({ x: platform.width * 3 + 200, y: canvas.height - 75, platform }),
     ];
 
+    objs = [
+        new Object({x: 10, y: canvas.height-165, width:200, height:100, obj: lgloo2}),
+        new Object({x: 250, y: canvas.height-125, width:80, height:50, obj: sign2}),
+    ];
+
     backgrounds = [
         new Background({ x: 0, y: 0, backround })
     ];
@@ -139,13 +165,16 @@ let animate = () => {
     c.fillRect(0, 0, canvas.width, canvas.height);
 
     backgrounds.forEach(bg => {
-        bg.draw()
+        bg.draw();
     });
 
     trees.forEach((tree) => {
         tree.draw();
     });
-
+    
+    objs.forEach((obj) => {
+        obj.draw();
+    });
     // draw platforms
     platforms.forEach((platform) => {
         platform.draw();
@@ -169,6 +198,10 @@ let animate = () => {
                 platform.position.x -= player.speed;
             });
 
+            objs.forEach((obj) => {
+                obj.position.x -= player.speed
+            });
+
             trees.forEach((tree) => {
                 tree.position.x -= player.speed * 0.58;
             });
@@ -178,6 +211,10 @@ let animate = () => {
             scrollOfset -= player.speed;
             platforms.forEach((platform) => {
                 platform.position.x += player.speed;
+            });
+
+            objs.forEach((obj) => {
+                obj.position.x += player.speed;
             });
 
             trees.forEach((tree) => {

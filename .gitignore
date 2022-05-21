@@ -1,4 +1,3 @@
-### VisualStudioCode ###
 ### Images ###
 # JPEG
 *.jpg
@@ -81,6 +80,8 @@
 *.vob
 *.wmv
 *.webm
+
+### VisualStudioCode ###
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
