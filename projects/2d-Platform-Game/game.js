@@ -8,16 +8,39 @@ const gravity = 0.3;
 // platforms Curent x position
 let scrollOfset = 0;
 
-let platform = new Image();
-platform.src = "images/platform.png";
+let tile5 = new Image();
+tile5.src = "wintertileset/Tiles/5.png";
+
+let tile2 = new Image();
+tile2.src = "wintertileset/Tiles/2.png";
+
+let tile6 = new Image();
+tile6.src = "wintertileset/Tiles/6.png";
+
+let tile3 = new Image();
+tile3.src = "wintertileset/Tiles/3.png";
+
+let tile11 = new Image();
+tile11.src = "wintertileset/Tiles/11.png";
+
+let tile16 = new Image();
+tile16.src = "wintertileset/Tiles/16.png";
+
+let tile10 = new Image();
+tile10.src = "wintertileset/Tiles/10.png";
+
 let backround = new Image();
 backround.src = "wintertileset/BG/BG.png";
-//trees
-let treeImg = new Image();
-treeImg.src = "wintertileset/Object/tree_1.png";
-//Object
+
+let tree1 = new Image();
+tree1.src = "wintertileset/Object/Tree_1.png";
+
+let tree2 = new Image();
+tree2.src = "wintertileset/Object/Tree_2.png";
+
 let lgloo2 = new Image();
 lgloo2.src = "wintertileset/Object/Igloo2.png";
+
 let sign2 = new Image();
 sign2.src = "wintertileset/Object/Sign_2.png";
 
@@ -58,17 +81,17 @@ class Player {
 };
 
 class Platform {
-    constructor({ x, y, platform }) {
+    constructor({ x, y, width, height, platform }) {
         this.position = {
             x,
-            y
+            y // y: y
         }
         this.platform = platform;
-        this.width = platform.width;
-        this.height = platform.height;
+        this.width = width;
+        this.height = height;
     };
     draw() {
-        c.drawImage(this.platform, this.position.x, this.position.y);
+        c.drawImage(this.platform, this.position.x, this.position.y, this.width, this.height);
     };
 };
 
@@ -88,17 +111,17 @@ class Background {
 };
 
 class Tree {
-    constructor({ x, y, treeImg }) {
+    constructor({ x, y, tree }) {
         this.position = {
             x,
             y
         };
-        this.treeImg = treeImg;
-        this.width = treeImg.width;
-        this.height = treeImg.height;
+        this.tree = tree;
+        this.width = tree.width;
+        this.height = tree.height;
     }
     draw() {
-        c.drawImage(this.treeImg, this.position.x, this.position.y);
+        c.drawImage(this.tree, this.position.x, this.position.y);
     };
 };
 
@@ -137,22 +160,73 @@ let init = () => {
 
     // create platform 
     platforms = [
-        new Platform({ x: 0, y: canvas.height - 75, platform }),
-        new Platform({ x: platform.width - 2, y: canvas.height - 75, platform }),
-        new Platform({ x: platform.width * 2 + 100, y: canvas.height - 75, platform }),
-        new Platform({ x: platform.width * 3 + 200, y: canvas.height - 75, platform }),
+        new Platform({ x: 40 * 0, y: canvas.height - 40, width: 40, height: 40, platform: tile5 }),
+        new Platform({ x: 40 * 1, y: canvas.height - 40, width: 40, height: 40, platform: tile5 }),
+        new Platform({ x: 40 * 2, y: canvas.height - 40, width: 40, height: 40, platform: tile5 }),
+        new Platform({ x: 40 * 3, y: canvas.height - 40, width: 40, height: 40, platform: tile5 }),
+        new Platform({ x: 40 * 4, y: canvas.height - 40, width: 40, height: 40, platform: tile5 }),
+        new Platform({ x: 40 * 5, y: canvas.height - 40, width: 40, height: 40, platform: tile5 }),
+        new Platform({ x: 40 * 6, y: canvas.height - 40, width: 40, height: 40, platform: tile5 }),
+        new Platform({ x: 40 * 7, y: canvas.height - 40, width: 40, height: 40, platform: tile5 }),
+        new Platform({ x: 40 * 8, y: canvas.height - 40, width: 40, height: 40, platform: tile5 }),
+        new Platform({ x: 40 * 9, y: canvas.height - 40, width: 40, height: 40, platform: tile5 }),
+        new Platform({ x: 40 * 10, y: canvas.height - 40, width: 40, height: 40, platform: tile5 }),
+        new Platform({ x: 40 * 11, y: canvas.height - 40, width: 40, height: 40, platform: tile5 }),
+        new Platform({ x: 40 * 12, y: canvas.height - 40, width: 40, height: 40, platform: tile5 }),
+        new Platform({ x: 40 * 13, y: canvas.height - 40, width: 40, height: 40, platform: tile5 }),
+        new Platform({ x: 40 * 14, y: canvas.height - 40, width: 40, height: 40, platform: tile5 }),
+        new Platform({ x: 40 * 15, y: canvas.height - 40, width: 40, height: 40, platform: tile5 }),
+        new Platform({ x: 40 * 16, y: canvas.height - 40, width: 40, height: 40, platform: tile5 }),
+        new Platform({ x: 40 * 17, y: canvas.height - 40, width: 40, height: 40, platform: tile6 }),
+
+        new Platform({ x: 40 * 0, y: canvas.height - 40 * 2, width: 40, height: 40, platform: tile5 }),
+        new Platform({ x: 40 * 1, y: canvas.height - 40 * 2, width: 40, height: 40, platform: tile5 }),
+        new Platform({ x: 40 * 2, y: canvas.height - 40 * 2, width: 40, height: 40, platform: tile5 }),
+        new Platform({ x: 40 * 3, y: canvas.height - 40 * 2, width: 40, height: 40, platform: tile5 }),
+        new Platform({ x: 40 * 4, y: canvas.height - 40 * 2, width: 40, height: 40, platform: tile5 }),
+        new Platform({ x: 40 * 5, y: canvas.height - 40 * 2, width: 40, height: 40, platform: tile5 }),
+        new Platform({ x: 40 * 6, y: canvas.height - 40 * 2, width: 40, height: 40, platform: tile5 }),
+        new Platform({ x: 40 * 7, y: canvas.height - 40 * 2, width: 40, height: 40, platform: tile5 }),
+        new Platform({ x: 40 * 8, y: canvas.height - 40 * 2, width: 40, height: 40, platform: tile5 }),
+        new Platform({ x: 40 * 9, y: canvas.height - 40 * 2, width: 40, height: 40, platform: tile5 }),
+        new Platform({ x: 40 * 10, y: canvas.height - 40 * 2, width: 40, height: 40, platform: tile5 }),
+        new Platform({ x: 40 * 11, y: canvas.height - 40 * 2, width: 40, height: 40, platform: tile5 }),
+        new Platform({ x: 40 * 12, y: canvas.height - 40 * 2, width: 40, height: 40, platform: tile5 }),
+        new Platform({ x: 40 * 13, y: canvas.height - 40 * 2, width: 40, height: 40, platform: tile5 }),
+        new Platform({ x: 40 * 14, y: canvas.height - 40 * 2, width: 40, height: 40, platform: tile5 }),
+        // corner
+        new Platform({ x: 40 * 15, y: canvas.height - 40 * 2, width: 40, height: 40, platform: tile10 }),
+        new Platform({ x: 40 * 16, y: canvas.height - 40 * 2, width: 40, height: 40, platform: tile11 }),
+        new Platform({ x: 40 * 17, y: canvas.height - 40 * 2, width: 40, height: 40, platform: tile3 }),
+
+        new Platform({ x: 40 * 0, y: canvas.height - 40 * 3, width: 40, height: 40, platform: tile2 }),
+        new Platform({ x: 40 * 1, y: canvas.height - 40 * 3, width: 40, height: 40, platform: tile2 }),
+        new Platform({ x: 40 * 2, y: canvas.height - 40 * 3, width: 40, height: 40, platform: tile2 }),
+        new Platform({ x: 40 * 3, y: canvas.height - 40 * 3, width: 40, height: 40, platform: tile2 }),
+        new Platform({ x: 40 * 4, y: canvas.height - 40 * 3, width: 40, height: 40, platform: tile2 }),
+        new Platform({ x: 40 * 5, y: canvas.height - 40 * 3, width: 40, height: 40, platform: tile2 }),
+        new Platform({ x: 40 * 6, y: canvas.height - 40 * 3, width: 40, height: 40, platform: tile2 }),
+        new Platform({ x: 40 * 7, y: canvas.height - 40 * 3, width: 40, height: 40, platform: tile2 }),
+        new Platform({ x: 40 * 8, y: canvas.height - 40 * 3, width: 40, height: 40, platform: tile2 }),
+        new Platform({ x: 40 * 9, y: canvas.height - 40 * 3, width: 40, height: 40, platform: tile2 }),
+        new Platform({ x: 40 * 10, y: canvas.height - 40 * 3, width: 40, height: 40, platform: tile2 }),
+        new Platform({ x: 40 * 11, y: canvas.height - 40 * 3, width: 40, height: 40, platform: tile2 }),
+        new Platform({ x: 40 * 12, y: canvas.height - 40 * 3, width: 40, height: 40, platform: tile2 }),
+        new Platform({ x: 40 * 13, y: canvas.height - 40 * 3, width: 40, height: 40, platform: tile2 }),
+        new Platform({ x: 40 * 14, y: canvas.height - 40 * 3, width: 40, height: 40, platform: tile2 }),
+        new Platform({ x: 40 * 15, y: canvas.height - 40 * 3, width: 40, height: 40, platform: tile3 }),
     ];
 
     objs = [
-        new Object({x: 10, y: canvas.height-165, width:200, height:100, obj: lgloo2}),
-        new Object({x: 250, y: canvas.height-125, width:80, height:50, obj: sign2}),
+        new Object({ x: 10, y: canvas.height - 320, width: 511, height: 201, obj: lgloo2 }),
+        new Object({ x: 560, y: canvas.height - 210, width: 87, height: 93, obj: sign2 }),
     ];
 
     backgrounds = [
         new Background({ x: 0, y: 0, backround })
     ];
     trees = [
-        new Tree({ x: 0, y: canvas.height - treeImg.height - 75, treeImg })
+        new Tree({  x: 20, y: canvas.height - 400, width: 228, height: 280, tree: tree2 })
     ];
 
     // platforms Curent x position
