@@ -2,8 +2,8 @@ const canvas = document.querySelector("canvas");
 const c = canvas.getContext("2d");
 
 // full screen
-canvas.width = window.innerWidth - 100;
-canvas.height = window.innerHeight - 75;
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 const gravity = 0.3;
 // platforms Curent x position
 let scrollOfset = 0;
@@ -75,11 +75,24 @@ tree1.src = "wintertileset/Object/Tree_1.png";
 let tree2 = new Image();
 tree2.src = "wintertileset/Object/Tree_2.png";
 
+let lgloo1 = new Image();
+lgloo1.src = "wintertileset/Object/Igloo.png";
+
 let lgloo2 = new Image();
 lgloo2.src = "wintertileset/Object/Igloo2.png";
 
+let sign1 = new Image();
+sign1.src = "wintertileset/Object/Sign_1.png";
+
 let sign2 = new Image();
 sign2.src = "wintertileset/Object/Sign_2.png";
+
+// sprite
+let spriteImg = new Image();
+spriteImg.src = "wintertileset/sprite/sprite6.png";
+
+let axeImg = new Image();
+axeImg.src = "wintertileset/sprite/axe_spin.png";
 
 
 // create player
@@ -87,23 +100,88 @@ class Player {
     constructor() {
         this.position = {
             x: 100,
-            y: 100
-        };
+            y: 0,
+        }
         this.velocity = {
             x: 0,
-            y: 1
-        };
-        this.speed = 20;
-        this.width = 30;
-        this.height = 30;
+            y: 1,
+            stopy: false
+        }
+        this.onGround = false;
+
+        this.speed = 10;
+        this.width = 100;
+        this.height = 150;
+        this.frameX = 0;
+        this.frameY = 0;
+        this.Dx = 0;
+        this.Dy = 304;
     };
+
+
+    timeOut() {
+        this.timeEnd = true
+        console.log("time");
+    };
+
+    idel() {
+        if (keys.last == "left") {
+            this.Dx = 201;
+            this.frameY = 3;
+            this.frameX++;
+        }
+        else {
+            this.Dx = 207;
+            this.frameY = 2;
+            this.frameX++;
+        };
+    };
+
+    moveLeft() {
+        this.Dx = 246;
+        this.frameY = 5;
+        this.frameX++;
+    };
+    moveRight() {
+        this.Dx = 246;
+        this.frameY = 4;
+        this.frameX++;
+    };
+
+    jump() {
+        if (keys.last == "left") {
+            this.Dx = 249;
+            this.frameY = 7;
+            this.frameX++;
+        }
+        else {
+            this.Dx = 249;
+            this.frameY = 6;
+            this.frameX++;
+        };
+    };
+
+    throw() {
+        if (keys.last == "left") {
+            this.Dx = 254;
+            this.frameY = 11;
+            this.frameX++;
+        } else {
+            this.Dx = 254;
+            this.frameY = 10;
+            this.frameX++;
+        };
+    };
+
     draw() {
-        c.fillStyle = "red"
-        c.fillRect(this.position.x, this.position.y,
-            this.width, this.height);
+        c.drawImage(spriteImg, this.Dx * this.frameX, this.Dy * this.frameY, this.Dx, this.Dy, this.position.x, this.position.y, this.width, this.height)
     };
 
     update() {
+        if (this.frameX > 9) {
+            this.frameX = 0;
+        };
+
         this.draw();
         this.position.x += this.velocity.x;
         this.position.y += this.velocity.y;
@@ -113,12 +191,11 @@ class Player {
             this.velocity.y <= canvas.height) {
             this.velocity.y += gravity;
         };
-        ;
-    }
+    };
 };
 
 class Platform {
-    constructor({ x, y, width, height, platform, colusion }) {
+    constructor({ x, y, width, height, platform, collision }) {
         this.position = {
             x,
             y // y: y
@@ -126,7 +203,7 @@ class Platform {
         this.platform = platform;
         this.width = width;
         this.height = height;
-        this.colusion = colusion;
+        this.collision = collision;
     };
     draw() {
         c.drawImage(this.platform, this.position.x, this.position.y, this.width, this.height);
@@ -178,154 +255,206 @@ class Decoration {
     };
 };
 
+class Axe {
+    constructor({ x, y }) {
+        this.position = {
+            x,
+            y
+        };
+        this.velocity = {
+            x: 13,
+            y: 0,
+        };
+        this.width = 185 / 3;
+        this.height = 185 / 3;
+        this.frameX = 0;
+    };
+
+    draw() {
+        c.drawImage(axeImg, 150 * this.frameX, 0, 150, 150, this.position.x, this.position.y, this.width, this.height);
+    };
+
+    update() {
+        this.frameX++;
+        if (this.frameX > 8) {
+            this.frameX = 0;
+        };
+
+        this.draw();
+        if (keys.last == "left") {
+            this.position.x -= this.velocity.x;
+        } else {
+            this.position.x += this.velocity.x;
+        };
+        this.position.y += this.velocity.y / 2;
+        this.velocity.y += gravity;
+    };
+};
+
 let player = new Player();
 let platforms = [];
 let trees = [];
 let background = [];
 let decoration = [];
 let result = [];
+let axes = [];
 
 const keys = {
+    last: null,
     right: {
         pressed: false,
     },
     left: {
         pressed: false,
     },
+    up: {
+        pressed: false,
+    },
+    down: {
+        pressed: false,
+    },
+    space: {
+        pressed: false,
+    },
+    throwKauni: false,
 };
 
 let init = () => {
     player = new Player();
 
+    axes = [];
+
     // create platform 
     platforms = [
-        { x: 0, y: canvas.height - 126, width: 214, height: 128, platform: blok5, colusion: true, where: "next" },
-        { x: null, y: canvas.height - 126, width: 214, height: 128, platform: blok5, colusion: true, where: "next" },
-        { x: null, y: canvas.height - 126, width: 214, height: 128, platform: blok5, colusion: true, where: "next" },
-        { x: null, y: canvas.height - 126, width: 128, height: 128, platform: blok3_3, colusion: true, where: "next" },
+        { x: 0, y: canvas.height - 126, width: 214, height: 128, platform: blok5, collision: true, where: "next" },
+        { x: null, y: canvas.height - 126, width: 214, height: 128, platform: blok5, collision: true, where: "next" },
+        { x: null, y: canvas.height - 126, width: 214, height: 128, platform: blok5, collision: true, where: "next" },
+        { x: null, y: canvas.height - 126, width: 128, height: 128, platform: blok3_3, collision: true, where: "next" },
 
         // right corner start
-        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile5, colusion: true, where: "next" },
-        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile10, colusion: true, where: "up" },
-        { x: null, y: canvas.height - 42 * 3, width: 42, height: 42, platform: tile3, colusion: true, where: "up" },
-        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile5, colusion: true, where: "next" },
-        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile11, colusion: true, where: "up" },
-        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile6, colusion: true, where: "next" },
-        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile3, colusion: true, where: "up" },
+        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile5, collision: true, where: "next" },
+        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile10, collision: true, where: "up" },
+        { x: null, y: canvas.height - 42 * 3, width: 42, height: 42, platform: tile3, collision: true, where: "up" },
+        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile5, collision: true, where: "next" },
+        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile11, collision: true, where: "up" },
+        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile6, collision: true, where: "next" },
+        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile3, collision: true, where: "up" },
         // right corner end
 
         //water start
-        { x: null, y: canvas.height - 75, width: 128, height: 75, platform: water3, colusion: false, where: "next" },
-        //{ x: null, y: canvas.height - 75, width: 213, height: 75, platform: water5, colusion: true, where: "next" },
+        { x: null, y: canvas.height - 75, width: 128, height: 75, platform: water3, collision: false, where: "next" },
+        //{ x: null, y: canvas.height - 75, width: 213, height: 75, platform: water5, collision: true, where: "next" },
         //water end
 
         //left corner start
-        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile4, colusion: true, where: "next" },
-        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile1, colusion: true, where: "up" },
-        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile5, colusion: true, where: "next" },
-        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile7, colusion: true, where: "up" },
-        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile5, colusion: true, where: "next" },
-        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile8, colusion: true, where: "up" },
-        { x: null, y: canvas.height - 42 * 3, width: 42, height: 42, platform: tile1, colusion: true, where: "up" },
+        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile4, collision: true, where: "next" },
+        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile1, collision: true, where: "up" },
+        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile5, collision: true, where: "next" },
+        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile7, collision: true, where: "up" },
+        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile5, collision: true, where: "next" },
+        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile8, collision: true, where: "up" },
+        { x: null, y: canvas.height - 42 * 3, width: 42, height: 42, platform: tile1, collision: true, where: "up" },
         // left corner end
 
-        { x: 0, y: canvas.height - 126, width: 214, height: 128, platform: blok5, colusion: true, where: "next" },
-        { x: 0, y: canvas.height - 126, width: 214, height: 128, platform: blok5, colusion: true, where: "next" },
-        { x: 0, y: canvas.height - 126, width: 214, height: 128, platform: blok5, colusion: true, where: "next" },
-        { x: 0, y: canvas.height - 126, width: 214, height: 128, platform: blok5, colusion: true, where: "next" },
-        { x: 0, y: canvas.height - 126, width: 214, height: 128, platform: blok5, colusion: true, where: "next" },
+        { x: 0, y: canvas.height - 126, width: 214, height: 128, platform: blok5, collision: true, where: "next" },
+        { x: 0, y: canvas.height - 126, width: 214, height: 128, platform: blok5, collision: true, where: "next" },
+        { x: 0, y: canvas.height - 126, width: 214, height: 128, platform: blok5, collision: true, where: "next" },
+        { x: 0, y: canvas.height - 126, width: 214, height: 128, platform: blok5, collision: true, where: "next" },
+        { x: 0, y: canvas.height - 126, width: 214, height: 128, platform: blok5, collision: true, where: "next" },
 
 
         // right corner start
-        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile5, colusion: true, where: "next" },
-        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile10, colusion: true, where: "up" },
-        { x: null, y: canvas.height - 42 * 3, width: 42, height: 42, platform: tile3, colusion: true, where: "up" },
-        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile5, colusion: true, where: "next" },
-        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile11, colusion: true, where: "up" },
-        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile6, colusion: true, where: "next" },
-        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile3, colusion: true, where: "up" },
+        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile5, collision: true, where: "next" },
+        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile10, collision: true, where: "up" },
+        { x: null, y: canvas.height - 42 * 3, width: 42, height: 42, platform: tile3, collision: true, where: "up" },
+        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile5, collision: true, where: "next" },
+        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile11, collision: true, where: "up" },
+        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile6, collision: true, where: "next" },
+        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile3, collision: true, where: "up" },
         // right corner end
 
         //water start
-        { x: null, y: canvas.height - 75, width: 128, height: 75, platform: water3, colusion: false, where: "next" },
-        { x: null, y: canvas.height - 75, width: 213, height: 75, platform: water5, colusion: true, where: "next" },
+        { x: null, y: canvas.height - 75, width: 128, height: 75, platform: water3, collision: false, where: "next" },
+        { x: null, y: canvas.height - 75, width: 213, height: 75, platform: water5, collision: false, where: "next" },
         //water end
 
         //left corner start
-        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile4, colusion: true, where: "next" },
-        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile1, colusion: true, where: "up" },
-        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile5, colusion: true, where: "next" },
-        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile7, colusion: true, where: "up" },
-        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile5, colusion: true, where: "next" },
-        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile8, colusion: true, where: "up" },
-        { x: null, y: canvas.height - 42 * 3, width: 42, height: 42, platform: tile1, colusion: true, where: "up" },
+        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile4, collision: true, where: "next" },
+        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile1, collision: true, where: "up" },
+        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile5, collision: true, where: "next" },
+        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile7, collision: true, where: "up" },
+        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile5, collision: true, where: "next" },
+        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile8, collision: true, where: "up" },
+        { x: null, y: canvas.height - 42 * 3, width: 42, height: 42, platform: tile1, collision: true, where: "up" },
         // left corner end
 
-        { x: 0, y: canvas.height - 126, width: 214, height: 128, platform: blok5, colusion: true, where: "next" },
+        { x: 0, y: canvas.height - 126, width: 214, height: 128, platform: blok5, collision: true, where: "next" },
 
-        { x: 0, y: canvas.height - 126, width: 214, height: 128, platform: blok5, colusion: true, where: "next" },
-        { x: null, y: canvas.height - 126, width: 214, height: 128, platform: blok5, colusion: true, where: "next" },
-        { x: null, y: canvas.height - 126, width: 214, height: 128, platform: blok5, colusion: true, where: "next" },
-        { x: null, y: canvas.height - 126, width: 128, height: 128, platform: blok3_3, colusion: true, where: "next" },
+        { x: 0, y: canvas.height - 126, width: 214, height: 128, platform: blok5, collision: true, where: "next" },
+        { x: null, y: canvas.height - 126, width: 214, height: 128, platform: blok5, collision: true, where: "next" },
+        { x: null, y: canvas.height - 126, width: 214, height: 128, platform: blok5, collision: true, where: "next" },
+        { x: null, y: canvas.height - 126, width: 128, height: 128, platform: blok3_3, collision: true, where: "next" },
 
         // right corner start
-        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile5, colusion: true, where: "next" },
-        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile10, colusion: true, where: "up" },
-        { x: null, y: canvas.height - 42 * 3, width: 42, height: 42, platform: tile3, colusion: true, where: "up" },
-        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile5, colusion: true, where: "next" },
-        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile11, colusion: true, where: "up" },
-        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile6, colusion: true, where: "next" },
-        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile3, colusion: true, where: "up" },
+        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile5, collision: true, where: "next" },
+        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile10, collision: true, where: "up" },
+        { x: null, y: canvas.height - 42 * 3, width: 42, height: 42, platform: tile3, collision: true, where: "up" },
+        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile5, collision: true, where: "next" },
+        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile11, collision: true, where: "up" },
+        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile6, collision: true, where: "next" },
+        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile3, collision: true, where: "up" },
         // right corner end
 
         //water start
-        { x: null, y: canvas.height - 75, width: 128, height: 75, platform: water3, colusion: false, where: "next" },
-        //{ x: null, y: canvas.height - 75, width: 213, height: 75, platform: water5, colusion: true, where: "next" },
+        { x: null, y: canvas.height - 75, width: 128, height: 75, platform: water3, collision: false, where: "next" },
+        //{ x: null, y: canvas.height - 75, width: 213, height: 75, platform: water5, collision: true, where: "next" },
         //water end
 
         //left corner start
-        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile4, colusion: true, where: "next" },
-        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile1, colusion: true, where: "up" },
-        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile5, colusion: true, where: "next" },
-        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile7, colusion: true, where: "up" },
-        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile5, colusion: true, where: "next" },
-        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile8, colusion: true, where: "up" },
-        { x: null, y: canvas.height - 42 * 3, width: 42, height: 42, platform: tile1, colusion: true, where: "up" },
+        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile4, collision: true, where: "next" },
+        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile1, collision: true, where: "up" },
+        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile5, collision: true, where: "next" },
+        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile7, collision: true, where: "up" },
+        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile5, collision: true, where: "next" },
+        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile8, collision: true, where: "up" },
+        { x: null, y: canvas.height - 42 * 3, width: 42, height: 42, platform: tile1, collision: true, where: "up" },
         // left corner end
 
-        { x: 0, y: canvas.height - 126, width: 214, height: 128, platform: blok5, colusion: true, where: "next" },
-        { x: 0, y: canvas.height - 126, width: 214, height: 128, platform: blok5, colusion: true, where: "next" },
-        { x: 0, y: canvas.height - 126, width: 214, height: 128, platform: blok5, colusion: true, where: "next" },
-        { x: 0, y: canvas.height - 126, width: 214, height: 128, platform: blok5, colusion: true, where: "next" },
-        { x: 0, y: canvas.height - 126, width: 214, height: 128, platform: blok5, colusion: true, where: "next" },
+        { x: 0, y: canvas.height - 126, width: 214, height: 128, platform: blok5, collision: true, where: "next" },
+        { x: 0, y: canvas.height - 126, width: 214, height: 128, platform: blok5, collision: true, where: "next" },
+        { x: 0, y: canvas.height - 126, width: 214, height: 128, platform: blok5, collision: true, where: "next" },
+        { x: 0, y: canvas.height - 126, width: 214, height: 128, platform: blok5, collision: true, where: "next" },
+        { x: 0, y: canvas.height - 126, width: 214, height: 128, platform: blok5, collision: true, where: "next" },
 
 
         // right corner start
-        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile5, colusion: true, where: "next" },
-        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile10, colusion: true, where: "up" },
-        { x: null, y: canvas.height - 42 * 3, width: 42, height: 42, platform: tile3, colusion: true, where: "up" },
-        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile5, colusion: true, where: "next" },
-        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile11, colusion: true, where: "up" },
-        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile6, colusion: true, where: "next" },
-        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile3, colusion: true, where: "up" },
+        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile5, collision: true, where: "next" },
+        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile10, collision: true, where: "up" },
+        { x: null, y: canvas.height - 42 * 3, width: 42, height: 42, platform: tile3, collision: true, where: "up" },
+        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile5, collision: true, where: "next" },
+        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile11, collision: true, where: "up" },
+        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile6, collision: true, where: "next" },
+        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile3, collision: true, where: "up" },
         // right corner end
 
         //water start
-        { x: null, y: canvas.height - 75, width: 128, height: 75, platform: water3, colusion: false, where: "next" },
-        { x: null, y: canvas.height - 75, width: 213, height: 75, platform: water5, colusion: false, where: "next" },
+        { x: null, y: canvas.height - 75, width: 128, height: 75, platform: water3, collision: false, where: "next" },
+        { x: null, y: canvas.height - 75, width: 213, height: 75, platform: water5, collision: false, where: "next" },
         //water end
 
         //left corner start
-        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile4, colusion: true, where: "next" },
-        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile1, colusion: true, where: "up" },
-        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile5, colusion: true, where: "next" },
-        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile7, colusion: true, where: "up" },
-        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile5, colusion: true, where: "next" },
-        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile8, colusion: true, where: "up" },
-        { x: null, y: canvas.height - 42 * 3, width: 42, height: 42, platform: tile1, colusion: true, where: "up" },
+        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile4, collision: true, where: "next" },
+        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile1, collision: true, where: "up" },
+        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile5, collision: true, where: "next" },
+        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile7, collision: true, where: "up" },
+        { x: null, y: canvas.height - 42, width: 42, height: 42, platform: tile5, collision: true, where: "next" },
+        { x: null, y: canvas.height - 42 * 2, width: 42, height: 42, platform: tile8, collision: true, where: "up" },
+        { x: null, y: canvas.height - 42 * 3, width: 42, height: 42, platform: tile1, collision: true, where: "up" },
         // left corner end
 
-        { x: 0, y: canvas.height - 126, width: 214, height: 128, platform: blok5, colusion: true, where: "next" },
+        { x: 0, y: canvas.height - 126, width: 214, height: 128, platform: blok5, collision: true, where: "next" },
+        { x: 0, y: canvas.height - 126, width: 214, height: 128, platform: blok5, collision: true, where: "next" },
+        { x: 0, y: canvas.height - 126, width: 214, height: 128, platform: blok5, collision: true, where: "next" },
 
 
     ]// 6, 3, 11, 16;
@@ -333,19 +462,27 @@ let init = () => {
     decoration = [
         new Decoration({ x: 10, y: canvas.height - 325, width: 511, height: 201, obj: lgloo2 }),
         new Decoration({ x: 560, y: canvas.height - 210, width: 87, height: 93, obj: sign2 }),
-        new Decoration({ x: 2700, y: canvas.height - 231, width: 96, height: 105, obj: snowMan }),
-        new Decoration({ x: 3000, y: canvas.height - 165, width: 62, height: 39, obj: stone }),
+        new Decoration({ x: 2800, y: canvas.height - 231, width: 96, height: 105, obj: snowMan }),
+        new Decoration({ x: 4340, y: canvas.height - 165, width: 62, height: 39, obj: stone }),
+        new Decoration({ x: 5790, y: canvas.height - 210, width: 87, height: 94, obj: sign1 }),
+        new Decoration({ x: 5950, y: canvas.height - 325, width: 511, height: 201, obj: lgloo1 }),
     ];
 
     background = new Background({ x: 0, y: 0, backround });
 
     trees = [
-        new Tree({ x: 0, y: canvas.height - 400, width: 228, height: 280, tree: tree2 }),
-        new Tree({ x: 400, y: canvas.height - 400, width: 364, height: 280, tree: tree1 }),
-        new Tree({ x: 1300, y: canvas.height - 400, width: 364, height: 280, tree: tree1 }),
-        new Tree({ x: 1700, y: canvas.height - 400, width: 228, height: 280, tree: tree2 }),
-        new Tree({ x: 2500, y: canvas.height - 400, width: 364, height: 280, tree: tree1 }),
-        new Tree({ x: 3000, y: canvas.height - 400, width: 364, height: 280, tree: tree1 }),
+        new Tree({ x: 0, y: canvas.height - 400, width: 364, height: 280, tree: tree2 }),
+        new Tree({ x: 400, y: canvas.height - 400, width: 228, height: 280, tree: tree1 }),
+        new Tree({ x: 1300, y: canvas.height - 400, width: 228, height: 280, tree: tree1 }),
+        new Tree({ x: 1700, y: canvas.height - 400, width: 364, height: 280, tree: tree2 }),
+        new Tree({ x: 2700, y: canvas.height - 400, width: 228, height: 280, tree: tree1 }),
+        new Tree({ x: 3000, y: canvas.height - 400, width: 228, height: 280, tree: tree1 }),
+        new Tree({ x: 3200, y: canvas.height - 400, width: 364, height: 280, tree: tree2 }),
+        new Tree({ x: 3900, y: canvas.height - 400, width: 364, height: 280, tree: tree2 }),
+        new Tree({ x: 4400, y: canvas.height - 400, width: 228, height: 280, tree: tree1 }),
+        new Tree({ x: 4700, y: canvas.height - 400, width: 228, height: 280, tree: tree1 }),
+        new Tree({ x: 5500, y: canvas.height - 400, width: 228, height: 280, tree: tree1 }),
+        new Tree({ x: 5720, y: canvas.height - 400, width: 364, height: 280, tree: tree2 }),
     ];
 
     result = [];
@@ -405,21 +542,30 @@ let animate = () => {
     // draw the player
     player.update();
 
+    axes.forEach((axe)=>{
+        axe.update();
+    });
+
     // right and left movement
     if (keys.right.pressed && player.position.x < 400
-        || keys.right.pressed && scrollOfset > 4700
-        && player.position.x < 1240) {
+        || keys.right.pressed && scrollOfset > 5097
+        && player.position.x < 1340) {
         player.velocity.x = player.speed;
+        player.moveRight();
     } else if (keys.left.pressed && player.position.x > 100
         || keys.left.pressed && scrollOfset === 0
         && player.position.x > 0) {
+        player.moveLeft();
         player.velocity.x = - player.speed;
     } else {
         player.velocity.x = 0;
         if (keys.right.pressed) {
             // move the platform to the left
-            scrollOfset += player.speed;
-            if (scrollOfset < 4750) {
+            if (scrollOfset < 5100) {
+                scrollOfset += player.speed;
+
+                player.moveRight();
+
                 result.forEach((platform) => {
                     platform.position.x -= player.speed;
                 });
@@ -429,13 +575,16 @@ let animate = () => {
                 });
 
                 trees.forEach((tree) => {
-                    tree.position.x -= player.speed * 0.90;
+                    tree.position.x -= player.speed * 0.93;
                 });
-            }
+            };
         }
         else if (keys.left.pressed && scrollOfset > 0) {
             // move the platform to the right
             scrollOfset -= player.speed;
+
+            player.moveLeft();
+
             result.forEach((platform) => {
                 platform.position.x += player.speed;
             });
@@ -445,28 +594,62 @@ let animate = () => {
             });
 
             trees.forEach((tree) => {
-                tree.position.x += player.speed * 0.90;
+                tree.position.x += player.speed * 0.93;
             });
         };
     };
 
+
+    if (keys.right.pressed == false && keys.left.pressed == false && keys.up.pressed == false) {
+        player.idel();
+    }
+
+    if (keys.up.pressed == true) {
+        player.jump();
+        if (player.onGround == true) {
+            player.velocity.y -= 8;
+            player.onGround = false;
+        }
+    }
+    if (keys.space.pressed) {
+        player.throw()
+    }
+
+    if (keys.throwKauni) {
+        if (axes.length < 10) {
+            let axe = new Axe({ x: player.position.x + (player.width / 2), y: player.position.y })
+            axes.push(axe);
+            keys.throwKauni = false;
+        }
+    }
+
     // collision detection
     result.forEach((platform) => {
-        if (platform.colusion) {
-            if (player.position.y + player.height <=
-                platform.position.y &&
-                player.position.y + player.height +
-                player.velocity.y >= platform.position.y
-                && player.position.x + player.width >=
-                platform.position.x && player.position.x
-                <= platform.position.x + platform.width) {
+        if (platform.collision) {
+            if (
+                player.position.y + player.height <= platform.position.y
+                && player.position.y + player.height + player.velocity.y >= platform.position.y
+
+                && player.position.x + player.width >= platform.position.x
+                && player.position.x <= platform.position.x + platform.width
+            ) {
                 player.velocity.y = 0;
+                player.velocity.stopy = true;
+                player.onGround = true;
+            };
+
+            if (player.position.x <= platform.position.x + platform.width
+                && player.position.y + player.height > platform.position.y) {
+                player.speed = 0;
+            } else {
+                player.speed = 10;
             };
         };
     });
+
     // win senario
     if (scrollOfset > 4000) {
-        console.log("you win");
+        //console.log("you win");
     };
     // lose senarion
     if (player.position.y > canvas.height) {
@@ -480,15 +663,23 @@ addEventListener("keydown", ({ keyCode }) => {
     switch (keyCode) {
         case 37:
             keys.left.pressed = true;
+            keys.last = "left";
             break
         case 40:
-            player.velocity.y += 8;
+            // if (player.velocity.stopy) {
+            //     player.velocity.y += 0;
+            // }
             break
         case 39:
             keys.right.pressed = true;
+            keys.last = "right";
             break
         case 38:
-            player.velocity.y -= 8;
+            keys.up.pressed = true;
+            break
+        case 32:
+            keys.space.pressed = true;
+            keys.throwKauni = true;
             break
     };
 });
@@ -505,8 +696,10 @@ addEventListener("keyup", ({ keyCode }) => {
             keys.right.pressed = false;
             break
         case 38:
-            console.log(scrollOfset);
-            console.log(player.position.x);
+            keys.up.pressed = false;
+            break
+        case 32:
+            keys.space.pressed = false;
             break
     };
 });
