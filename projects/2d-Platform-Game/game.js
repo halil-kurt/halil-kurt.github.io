@@ -9,7 +9,7 @@ const gravity = 0.3;
 let scrollOfset = 0;
 
 let tile5 = new Image();
-tile5.src = "wintertileset/Tiles/5.png";
+tile5.src = "/wintertileset/Tiles/5.png";
 
 let tile4 = new Image();
 tile4.src = "wintertileset/Tiles/4.png";
