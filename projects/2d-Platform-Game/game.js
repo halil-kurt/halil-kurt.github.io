@@ -12,87 +12,87 @@ let tile5 = new Image();
 tile5.src = "/wintertileset/Tiles/5.png";
 
 let tile4 = new Image();
-tile4.src = "wintertileset/Tiles/4.png";
+tile4.src = "/wintertileset/Tiles/4.png";
 
 let tile2 = new Image();
-tile2.src = "wintertileset/Tiles/2.png";
+tile2.src = "/wintertileset/Tiles/2.png";
 
 let tile6 = new Image();
-tile6.src = "wintertileset/Tiles/6.png";
+tile6.src = "/wintertileset/Tiles/6.png";
 
 let tile3 = new Image();
-tile3.src = "wintertileset/Tiles/3.png";
+tile3.src = "/wintertileset/Tiles/3.png";
 
 let tile1 = new Image();
-tile1.src = "wintertileset/Tiles/1.png";
+tile1.src = "/wintertileset/Tiles/1.png";
 
 let tile7 = new Image();
-tile7.src = "wintertileset/Tiles/7.png";
+tile7.src = "/wintertileset/Tiles/7.png";
 
 let tile8 = new Image();
-tile8.src = "wintertileset/Tiles/8.png";
+tile8.src = "/wintertileset/Tiles/8.png";
 
 let tile11 = new Image();
-tile11.src = "wintertileset/Tiles/11.png";
+tile11.src = "/wintertileset/Tiles/11.png";
 
 let tile16 = new Image();
-tile16.src = "wintertileset/Tiles/16.png";
+tile16.src = "/wintertileset/Tiles/16.png";
 
 let tile10 = new Image();
-tile10.src = "wintertileset/Tiles/10.png";
+tile10.src = "/wintertileset/Tiles/10.png";
 
 let blok5 = new Image();
-blok5.src = "wintertileset/Tiles/5.3_blok.png";
+blok5.src = "/wintertileset/Tiles/5.3_blok.png";
 
 let blok3_3 = new Image();
-blok3_3.src = "wintertileset/Tiles/3.3_blok.png";
+blok3_3.src = "/wintertileset/Tiles/3.3_blok.png";
 
 let water5 = new Image();
-water5.src = "wintertileset/Tiles/5.2_water.png";
+water5.src = "/wintertileset/Tiles/5.2_water.png";
 
 let water3 = new Image();
-water3.src = "wintertileset/Tiles/3.2_water.png";
+water3.src = "/wintertileset/Tiles/3.2_water.png";
 
 let leftLid = new Image();
-leftLid.src = "wintertileset/Tiles/left_lid.png";
+leftLid.src = "/wintertileset/Tiles/left_lid.png";
 
 let rightLid = new Image();
-rightLid.src = "wintertileset/Tiles/right_lid.png";
+rightLid.src = "/wintertileset/Tiles/right_lid.png";
 
 let backround = new Image();
-backround.src = "wintertileset/BG/BG.png";
+backround.src = "/wintertileset/BG/BG.png";
 
 // decoration
 let snowMan = new Image();
-snowMan.src = "wintertileset/Object/SnowMan.png";
+snowMan.src = "/wintertileset/Object/SnowMan.png";
 
 let stone = new Image();
-stone.src = "wintertileset/Object/Stone.png";
+stone.src = "/wintertileset/Object/Stone.png";
 
 let tree1 = new Image();
-tree1.src = "wintertileset/Object/Tree_1.png";
+tree1.src = "/wintertileset/Object/Tree_1.png";
 
 let tree2 = new Image();
-tree2.src = "wintertileset/Object/Tree_2.png";
+tree2.src = "/wintertileset/Object/Tree_2.png";
 
 let lgloo1 = new Image();
-lgloo1.src = "wintertileset/Object/Igloo.png";
+lgloo1.src = "/wintertileset/Object/Igloo.png";
 
 let lgloo2 = new Image();
-lgloo2.src = "wintertileset/Object/Igloo2.png";
+lgloo2.src = "/wintertileset/Object/Igloo2.png";
 
 let sign1 = new Image();
-sign1.src = "wintertileset/Object/Sign_1.png";
+sign1.src = "/wintertileset/Object/Sign_1.png";
 
 let sign2 = new Image();
-sign2.src = "wintertileset/Object/Sign_2.png";
+sign2.src = "/wintertileset/Object/Sign_2.png";
 
 // sprite
 let spriteImg = new Image();
-spriteImg.src = "wintertileset/sprite/sprite6.png";
+spriteImg.src = "/wintertileset/sprite/sprite6.png";
 
 let axeImg = new Image();
-axeImg.src = "wintertileset/sprite/axe_spin.png";
+axeImg.src = "/wintertileset/sprite/axe_spin.png";
 
 
 // create player
