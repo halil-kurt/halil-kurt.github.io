@@ -256,7 +256,7 @@ class Decoration {
 };
 
 class Axe {
-    constructor({ x, y }) {
+    constructor({ x, y, direction }) {
         this.position = {
             x,
             y
@@ -268,6 +268,9 @@ class Axe {
         this.width = 185 / 3;
         this.height = 185 / 3;
         this.frameX = 0;
+        this.direction = direction;
+        this.noSpin = false;
+        this.stick = false;
     };
 
     draw() {
@@ -275,17 +278,19 @@ class Axe {
     };
 
     update() {
-        this.frameX++;
-        if (this.frameX > 8) {
-            this.frameX = 0;
+        if (!this.noSpin) {
+            this.frameX++;
+            if (this.frameX > 7) {
+                this.frameX = 0;
+            };
         };
-
         this.draw();
-        if (keys.last == "left") {
+        if (this.direction == "left") {
             this.position.x -= this.velocity.x;
         } else {
             this.position.x += this.velocity.x;
         };
+        //gravity
         this.position.y += this.velocity.y / 2;
         this.velocity.y += gravity;
     };
@@ -535,15 +540,17 @@ let animate = () => {
     decoration.forEach((obj) => {
         obj.draw();
     });
-    // draw platforms
-    result.forEach((platform) => {
-        platform.draw();
-    });
+
     // draw the player
     player.update();
 
-    axes.forEach((axe)=>{
+    axes.forEach((axe) => {
         axe.update();
+    });
+
+    // draw platforms
+    result.forEach((platform) => {
+        platform.draw();
     });
 
     // right and left movement
@@ -577,6 +584,10 @@ let animate = () => {
                 trees.forEach((tree) => {
                     tree.position.x -= player.speed * 0.93;
                 });
+
+                axes.forEach((axe) => {
+                    axe.position.x -= player.speed
+                });
             };
         }
         else if (keys.left.pressed && scrollOfset > 0) {
@@ -595,6 +606,10 @@ let animate = () => {
 
             trees.forEach((tree) => {
                 tree.position.x += player.speed * 0.93;
+            });
+
+            axes.forEach((axe) => {
+                axe.position.x += player.speed
             });
         };
     };
@@ -616,20 +631,26 @@ let animate = () => {
     }
 
     if (keys.throwKauni) {
+        let direction = "right";
         if (axes.length < 10) {
-            let axe = new Axe({ x: player.position.x + (player.width / 2), y: player.position.y })
+            if (keys.last == "left") {
+                direction = "left";
+            };
+            let axe = new Axe({ x: player.position.x + (player.width / 2), y: player.position.y, direction: direction })
             axes.push(axe);
             keys.throwKauni = false;
-        }
-    }
+        };
+    };
 
     // collision detection
     result.forEach((platform) => {
         if (platform.collision) {
+            // player
             if (
                 player.position.y + player.height <= platform.position.y
                 && player.position.y + player.height + player.velocity.y >= platform.position.y
 
+                //collision for the empty space(after the corner)
                 && player.position.x + player.width >= platform.position.x
                 && player.position.x <= platform.position.x + platform.width
             ) {
@@ -637,13 +658,24 @@ let animate = () => {
                 player.velocity.stopy = true;
                 player.onGround = true;
             };
-
+            // collusion for the corner of ground
             if (player.position.x <= platform.position.x + platform.width
                 && player.position.y + player.height > platform.position.y) {
                 player.speed = 0;
             } else {
                 player.speed = 10;
             };
+            // axe
+            axes.forEach((axe) => {
+                if (axe.position.y + axe.height >= platform.position.y
+                    && axe.position.x + axe.width >= platform.position.x
+                    && axe.position.x <= platform.position.x + platform.width) {
+                    axe.velocity.x = 0;
+                    axe.velocity.y = 0;
+                    axe.noSpin = true;
+                    axe.stick = true;
+                };
+            });
         };
     });
 
@@ -655,7 +687,8 @@ let animate = () => {
     if (player.position.y > canvas.height) {
         init();
     };
-}
+}// animate
+
 init();
 animate();
 
