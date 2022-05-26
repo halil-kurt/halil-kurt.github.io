@@ -8,102 +8,102 @@ const gravity = 0.3;
 // platforms Curent x position
 let scrollOfset = 0;
 
-let tile5 = new Image();
+const tile5 = new Image();
 tile5.src = "wintertileset/Tiles/5.png";
 
-let tile4 = new Image();
+const tile4 = new Image();
 tile4.src = "wintertileset/Tiles/4.png";
 
-let tile2 = new Image();
+const tile2 = new Image();
 tile2.src = "wintertileset/Tiles/2.png";
 
-let tile6 = new Image();
+const tile6 = new Image();
 tile6.src = "wintertileset/Tiles/6.png";
 
-let tile3 = new Image();
+const tile3 = new Image();
 tile3.src = "wintertileset/Tiles/3.png";
 
-let tile1 = new Image();
+const tile1 = new Image();
 tile1.src = "wintertileset/Tiles/1.png";
 
-let tile7 = new Image();
+const tile7 = new Image();
 tile7.src = "wintertileset/Tiles/7.png";
 
-let tile8 = new Image();
+const tile8 = new Image();
 tile8.src = "wintertileset/Tiles/8.png";
 
-let tile11 = new Image();
+const tile11 = new Image();
 tile11.src = "wintertileset/Tiles/11.png";
 
-let tile16 = new Image();
+const tile16 = new Image();
 tile16.src = "wintertileset/Tiles/16.png";
 
-let tile10 = new Image();
+const tile10 = new Image();
 tile10.src = "wintertileset/Tiles/10.png";
 
-let blok5 = new Image();
+const blok5 = new Image();
 blok5.src = "wintertileset/Tiles/5.3_blok.png";
 
-let blok3_3 = new Image();
+const blok3_3 = new Image();
 blok3_3.src = "wintertileset/Tiles/3.3_blok.png";
 
-let water5 = new Image();
+const water5 = new Image();
 water5.src = "wintertileset/Tiles/5.2_water.png";
 
-let water3 = new Image();
+const water3 = new Image();
 water3.src = "wintertileset/Tiles/3.2_water.png";
 
-let leftLid = new Image();
+const leftLid = new Image();
 leftLid.src = "wintertileset/Tiles/left_lid.png";
 
-let rightLid = new Image();
+const rightLid = new Image();
 rightLid.src = "wintertileset/Tiles/right_lid.png";
 
-let backround = new Image();
+const backround = new Image();
 backround.src = "wintertileset/BG/BG.png";
 
 // decoration
-let snowMan = new Image();
+const snowMan = new Image();
 snowMan.src = "wintertileset/Object/SnowMan.png";
 
-let stone = new Image();
+const stone = new Image();
 stone.src = "wintertileset/Object/Stone.png";
 
-let tree1 = new Image();
+const tree1 = new Image();
 tree1.src = "wintertileset/Object/Tree_1.png";
 
-let tree2 = new Image();
+const tree2 = new Image();
 tree2.src = "wintertileset/Object/Tree_2.png";
 
-let lgloo1 = new Image();
+const lgloo1 = new Image();
 lgloo1.src = "wintertileset/Object/Igloo.png";
 
-let lgloo2 = new Image();
+const lgloo2 = new Image();
 lgloo2.src = "wintertileset/Object/Igloo2.png";
 
-let sign1 = new Image();
+const sign1 = new Image();
 sign1.src = "wintertileset/Object/Sign_1.png";
 
-let sign2 = new Image();
+const sign2 = new Image();
 sign2.src = "wintertileset/Object/Sign_2.png";
 
 // sprite
-let spriteImg = new Image();
+const spriteImg = new Image();
 spriteImg.src = "wintertileset/sprite/sprite10.png";
 
-let axeImg = new Image();
+const axeImg = new Image();
 axeImg.src = "wintertileset/sprite/axe_spin.png";
 
-let golemWalk = new Image();
+const golemWalk = new Image();
 golemWalk.src = "wintertileset/sprite/golem-walk.png";
 
-let golemAtk = new Image();
+const golemAtk = new Image();
 golemAtk.src = "wintertileset/sprite/golem-atk.png";
 
-let golemDie = new Image();
+const golemDie = new Image();
 golemDie.src = "wintertileset/sprite/golem-die.png";
 
-let snowBallImg = new Image();
+const snowBallImg = new Image();
 snowBallImg.src = "wintertileset/sprite/snowball.png";
 
 
@@ -724,7 +724,7 @@ let init = () => {
             lasty = item.y;
             maxX += lastWidth;
             continue;
-        }
+        };
         for (let i = 1; i < 2; i++) {
             if (item.where == "next") {
                 item.x = maxX;
@@ -739,256 +739,269 @@ let init = () => {
             };
         };
     };
-
     // platforms Curent x position
     scrollOfset = 0;
 };
 
+init();
+
+let fps = 40, fpsInterval, startTime, now, then, elapsed;
+function startAnimating(fps) {
+    // fps ayarlama
+    fpsInterval = 1000 / fps;
+    then = Date.now();
+    startTime = then;
+    animate();
+};
+
 let animate = () => {
     requestAnimationFrame(animate);
-    c.fillStyle = "white";
-    c.fillRect(0, 0, canvas.width, canvas.height);
+    now = Date.now();
+    elapsed = now - then;
+    if (elapsed > fpsInterval) {
+        then = now - (elapsed % fpsInterval)
+        c.fillStyle = "white";
+        c.fillRect(0, 0, canvas.width, canvas.height);
 
-    background.draw();
+        background.draw();
 
-    trees.forEach((tree) => {
-        tree.draw();
-    });
+        trees.forEach((tree) => {
+            tree.draw();
+        });
 
-    decoration.forEach((obj) => {
-        obj.draw();
-    });
+        decoration.forEach((obj) => {
+            obj.draw();
+        });
 
-    // draw the player
-    player.update();
+        // draw the player
+        player.update();
 
 
-    axes.forEach((axe) => {
-        axe.update();
-    });
+        axes.forEach((axe) => {
+            axe.update();
+        });
 
-    // draw platforms
-    result.forEach((platform) => {
-        platform.draw();
-    });
+        // draw platforms
+        result.forEach((platform) => {
+            platform.draw();
+        });
 
-    snowBalls.forEach((ball) => {
-        ball.ubdate();
-    });
+        snowBalls.forEach((ball) => {
+            ball.ubdate();
+        });
 
-    goblins.forEach((goblin) => {
-        goblin.ubdate();
-    });
+        goblins.forEach((goblin) => {
+            goblin.ubdate();
+        });
 
-    // right and left movement
-    if (keys.right.pressed && player.position.x < 400
-        || keys.right.pressed && scrollOfset > 5097
-        && player.position.x < 1340) {
-        player.velocity.x = player.speed;
-        player.moveRight();
-    } else if (keys.left.pressed && player.position.x > 100
-        || keys.left.pressed && scrollOfset === 0
-        && player.position.x > 0) {
-        player.moveLeft();
-        player.velocity.x = - player.speed;
-    } else {
-        player.velocity.x = 0;
-        if (keys.right.pressed) {
-            // move the platform to the left
-            if (scrollOfset < 5100) {
-                scrollOfset += player.speed;
+        // right and left movement
+        if (keys.right.pressed && player.position.x < 400
+            || keys.right.pressed && scrollOfset > 5097
+            && player.position.x < 1340) {
+            player.velocity.x = player.speed;
+            player.moveRight();
+        } else if (keys.left.pressed && player.position.x > 100
+            || keys.left.pressed && scrollOfset === 0
+            && player.position.x > 0) {
+            player.moveLeft();
+            player.velocity.x = - player.speed;
+        } else {
+            player.velocity.x = 0;
+            if (keys.right.pressed) {
+                // move the platform to the left
+                if (scrollOfset < 5100) {
+                    scrollOfset += player.speed;
 
-                player.moveRight();
+                    player.moveRight();
+
+                    result.forEach((platform) => {
+                        platform.position.x -= player.speed;
+                    });
+
+                    decoration.forEach((obj) => {
+                        obj.position.x -= player.speed
+                    });
+
+                    trees.forEach((tree) => {
+                        tree.position.x -= player.speed * 0.93;
+                    });
+
+                    axes.forEach((axe) => {
+                        axe.position.x -= player.speed
+                    });
+
+                    snowBalls.forEach((ball) => {
+                        ball.position.x -= player.speed
+                    });
+
+                    goblins.forEach((goblin) => {
+                        goblin.position.x -= player.speed;
+                        goblin.moveZone.maxX -= player.speed;
+                        goblin.moveZone.minX -= player.speed;
+                    });
+                };
+            }
+            else if (keys.left.pressed && scrollOfset > 0) {
+                // move the platform to the right
+                scrollOfset -= player.speed;
+
+                player.moveLeft();
 
                 result.forEach((platform) => {
-                    platform.position.x -= player.speed;
+                    platform.position.x += player.speed;
                 });
 
                 decoration.forEach((obj) => {
-                    obj.position.x -= player.speed
+                    obj.position.x += player.speed;
                 });
 
                 trees.forEach((tree) => {
-                    tree.position.x -= player.speed * 0.93;
+                    tree.position.x += player.speed * 0.93;
                 });
 
                 axes.forEach((axe) => {
-                    axe.position.x -= player.speed
+                    axe.position.x += player.speed
                 });
 
                 snowBalls.forEach((ball) => {
-                    ball.position.x -= player.speed
+                    ball.position.x += player.speed
                 });
 
                 goblins.forEach((goblin) => {
-                    goblin.position.x -= player.speed;
-                    goblin.moveZone.maxX -= player.speed;
-                    goblin.moveZone.minX -= player.speed;
+                    goblin.position.x += player.speed;
+                    goblin.moveZone.maxX += player.speed;
+                    goblin.moveZone.minX += player.speed;
                 });
             };
+        };
+
+        if (player.firtsLanding == false) {
+            player.glide();
+        };
+
+        if (keys.right.pressed == false && keys.left.pressed == false &&
+            keys.up.pressed == false && keys.b.pressed == false
+            && player.firtsLanding == true) {
+            player.idel();
+        };
+
+        if (keys.up.pressed == true) {
+            player.jump();
+            if (player.onGround == true) {
+                player.velocity.y -= 8;
+                player.onGround = false;
+            }
         }
-        else if (keys.left.pressed && scrollOfset > 0) {
-            // move the platform to the right
-            scrollOfset -= player.speed;
+        if (keys.space.pressed) {
+            player.throw()
+        }
 
-            player.moveLeft();
+        if (keys.throwKauni) {
+            let direction = "right";
+            if (axes.length < 10) {
+                if (keys.last == "left") {
+                    direction = "left";
+                };
+                let axe = new Axe({ x: player.position.x + (player.width / 2), y: player.position.y, direction: direction })
+                axes.push(axe);
+                keys.throwKauni = false;
+            };
+        };
 
-            result.forEach((platform) => {
-                platform.position.x += player.speed;
-            });
-
-            decoration.forEach((obj) => {
-                obj.position.x += player.speed;
-            });
-
-            trees.forEach((tree) => {
-                tree.position.x += player.speed * 0.93;
-            });
-
-            axes.forEach((axe) => {
-                axe.position.x += player.speed
-            });
-
-            snowBalls.forEach((ball) => {
-                ball.position.x += player.speed
-            });
-
+        if (keys.b.pressed) {
+            player.attack();
             goblins.forEach((goblin) => {
-                goblin.position.x += player.speed;
-                goblin.moveZone.maxX += player.speed;
-                goblin.moveZone.minX += player.speed;
+                if (player.position.x + player.width >= goblin.position.x
+                    && player.position.x <= goblin.position.x + goblin.width
+                    && player.frameX == 9
+                ) {
+                    goblin.life--;
+                };
             });
         };
-    };
 
-    if (player.firtsLanding == false) {
-        player.glide();
-    };
+        // collision detection
+        result.forEach((platform) => {
+            if (platform.collision) {
+                // player
+                if (
+                    player.position.y + player.height <= platform.position.y
+                    && player.position.y + player.height + player.velocity.y >= platform.position.y
 
-    if (keys.right.pressed == false && keys.left.pressed == false &&
-        keys.up.pressed == false && keys.b.pressed == false
-        && player.firtsLanding == true) {
-        player.idel();
-    };
+                    //collision for the empty space(after the corner)
+                    && player.position.x + player.width >= platform.position.x
+                    && player.position.x <= platform.position.x + platform.width
+                ) {
+                    player.velocity.y = 0;
+                    player.velocity.stopy = true;
+                    player.onGround = true;
+                    player.firtsLanding = true;
+                };
+                // collusion for the corner of ground
+                if (player.position.x <= platform.position.x + platform.width
+                    && player.position.y + player.height > platform.position.y) {
+                    player.speed = 0;
+                } else {
+                    player.speed = 10;
+                };
+                // axe
+                axes.forEach((axe) => {
+                    if (axe.position.y + axe.height - 20 >= platform.position.y
+                        && axe.position.x + axe.width - 15 >= platform.position.x
+                        && axe.position.x + 15 <= platform.position.x + platform.width) {
+                        axe.velocity.x = 0;
+                        axe.velocity.y = 0;
+                        axe.noSpin = true;
+                    };
+                });
 
-    if (keys.up.pressed == true) {
-        player.jump();
-        if (player.onGround == true) {
-            player.velocity.y -= 8;
-            player.onGround = false;
-        }
-    }
-    if (keys.space.pressed) {
-        player.throw()
-    }
-
-    if (keys.throwKauni) {
-        let direction = "right";
-        if (axes.length < 10) {
-            if (keys.last == "left") {
-                direction = "left";
+                // snow balls
+                snowBalls.forEach((ball) => {
+                    if (ball.position.y + ball.height / 2 >= platform.position.y) {
+                        snowBalls.shift(ball)
+                    };
+                });
             };
-            let axe = new Axe({ x: player.position.x + (player.width / 2), y: player.position.y, direction: direction })
-            axes.push(axe);
-            keys.throwKauni = false;
-        };
-    };
+        });
 
-    if (keys.b.pressed) {
-        player.attack();
+        // eğer balta göbline çarparsa
         goblins.forEach((goblin) => {
-            if (player.position.x + player.width >= goblin.position.x
-                && player.position.x <= goblin.position.x + goblin.width
-                && player.frameX == 9
-            ) {
-                goblin.life--;
-            };
-        });
-    };
-
-    // collision detection
-    result.forEach((platform) => {
-        if (platform.collision) {
-            // player
-            if (
-                player.position.y + player.height <= platform.position.y
-                && player.position.y + player.height + player.velocity.y >= platform.position.y
-
-                //collision for the empty space(after the corner)
-                && player.position.x + player.width >= platform.position.x
-                && player.position.x <= platform.position.x + platform.width
-            ) {
-                player.velocity.y = 0;
-                player.velocity.stopy = true;
-                player.onGround = true;
-                player.firtsLanding = true;
-            };
-            // collusion for the corner of ground
-            if (player.position.x <= platform.position.x + platform.width
-                && player.position.y + player.height > platform.position.y) {
-                player.speed = 0;
-            } else {
-                player.speed = 10;
-            };
-            // axe
             axes.forEach((axe) => {
-                if (axe.position.y + axe.height - 20 >= platform.position.y
-                    && axe.position.x + axe.width - 15 >= platform.position.x
-                    && axe.position.x + 15 <= platform.position.x + platform.width) {
-                    axe.velocity.x = 0;
-                    axe.velocity.y = 0;
+                if (axe.noSpin === false
+                    && goblin.dead == false
+                    // yatay
+                    && axe.position.x + axe.width >= goblin.position.x + goblin.width / 2
+                    && axe.position.x <= goblin.position.x + goblin.width / 2
+                    // dikey
+                    && axe.position.y + axe.width >= goblin.position.y
+                ) {
                     axe.noSpin = true;
+                    axes.pop();
+                    goblin.life -= 1;
                 };
             });
-
-            // snow balls
-            snowBalls.forEach((ball) => {
-                if (ball.position.y + ball.height / 2 >= platform.position.y) {
-                    snowBalls.shift(ball)
-                };
-            });
-        };
-    });
-
-    // eğer balta göbline çarparsa
-    goblins.forEach((goblin) => {
-        axes.forEach((axe) => {
-            if (axe.noSpin === false
-                && goblin.dead == false
-                // yatay
-                && axe.position.x + axe.width >= goblin.position.x + goblin.width / 2
-                && axe.position.x <= goblin.position.x + goblin.width / 2
-                // dikey
-                && axe.position.y + axe.width >= goblin.position.y
-            ) {
-                axe.noSpin = true;
-                axes.pop();
-                goblin.life -= 1;
+        });
+        // düşman birşey firlatırsa
+        snowBalls.forEach((ball) => {
+            if (ball.position.x + ball.width >= player.position.x
+                && ball.position.x <= player.position.x + player.width) {
+                player.life--;
+                snowBalls.shift(ball);
             };
         });
-    });
-    // düşman birşey firlatırsa
-    snowBalls.forEach((ball) => {
-        if (ball.position.x + ball.width >= player.position.x
-            && ball.position.x <= player.position.x + player.width) {
-            player.life--;
-            snowBalls.shift(ball);
-        };
-    });
 
-    // win senario
-    if (scrollOfset > 4000) {
-        //console.log("you win");
-    };
-    // lose senarion
-    if (player.position.y > canvas.height) {
-        goblins = [];
-        init();
+        // win senario
+        if (scrollOfset > 4000) {
+            //console.log("you win");
+        };
+        // lose senarion
+        if (player.position.y > canvas.height) {
+            goblins = [];
+            init();
+        };
     };
 };// animate
-
-init();
-animate();
+startAnimating(fps);
 
 addEventListener("keydown", ({ keyCode }) => {
     switch (keyCode) {
