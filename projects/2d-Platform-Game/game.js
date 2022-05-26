@@ -89,10 +89,20 @@ sign2.src = "wintertileset/Object/Sign_2.png";
 
 // sprite
 let spriteImg = new Image();
-spriteImg.src = "wintertileset/sprite/sprite6.png";
+spriteImg.src = "wintertileset/sprite/sprite9.png";
 
 let axeImg = new Image();
 axeImg.src = "wintertileset/sprite/axe_spin.png";
+
+let golemWalk = new Image();
+golemWalk.src = "wintertileset/sprite/golem-walk.png";
+
+let golemAtk = new Image();
+golemAtk.src = "wintertileset/sprite/golem-atk.png";
+
+let snowBallImg = new Image();
+snowBallImg.src = "wintertileset/sprite/snowball.png";
+
 
 
 // create player
@@ -101,13 +111,14 @@ class Player {
         this.position = {
             x: 100,
             y: 0,
-        }
+        };
         this.velocity = {
             x: 0,
             y: 1,
             stopy: false
-        }
+        };
         this.onGround = false;
+        this.firtsLanding = false;
 
         this.speed = 10;
         this.width = 100;
@@ -115,47 +126,42 @@ class Player {
         this.frameX = 0;
         this.frameY = 0;
         this.Dx = 0;
-        this.Dy = 304;
-    };
-
-
-    timeOut() {
-        this.timeEnd = true
-        console.log("time");
+        this.Dy = 152;
     };
 
     idel() {
+        this.dy = 152;
         if (keys.last == "left") {
-            this.Dx = 201;
+            this.Dx = 80;
             this.frameY = 3;
             this.frameX++;
         }
         else {
-            this.Dx = 207;
+            this.Dx = 80;
             this.frameY = 2;
             this.frameX++;
         };
     };
 
     moveLeft() {
-        this.Dx = 246;
+        this.Dx = 120;
         this.frameY = 5;
         this.frameX++;
     };
     moveRight() {
-        this.Dx = 246;
+        this.Dx = 120;
         this.frameY = 4;
         this.frameX++;
     };
 
     jump() {
         if (keys.last == "left") {
-            this.Dx = 249;
+            this.Dx = 114;
             this.frameY = 7;
             this.frameX++;
         }
         else {
-            this.Dx = 249;
+            this.Dx = 114;
             this.frameY = 6;
             this.frameX++;
         };
@@ -163,13 +169,34 @@ class Player {
 
     throw() {
         if (keys.last == "left") {
-            this.Dx = 254;
+            this.Dx = 127;
             this.frameY = 11;
             this.frameX++;
         } else {
-            this.Dx = 254;
+            this.Dx = 127;
             this.frameY = 10;
             this.frameX++;
+        };
+    };
+
+    attack() {
+        this.frameX++;
+        if (keys.last == "left") {
+            this.Dx = 165;
+            this.frameY = 1;
+        } else {
+            this.Dx = 165; ///!
+            this.frameY = 0;
+        };
+    };
+
+    glide() {
+        this.frameX++
+        this.Dx = 148;
+        if (keys.last == "left") {
+            this.frameY = 9;
+        } else {
+            this.frameY = 8;
         };
     };
 
@@ -187,12 +214,125 @@ class Player {
         this.position.y += this.velocity.y;
 
         // gravity
-        if (this.position.y + this.height +
-            this.velocity.y <= canvas.height) {
-            this.velocity.y += gravity;
+        if (player.firtsLanding) {
+            if (this.position.y + this.height +
+                this.velocity.y <= canvas.height) {
+                this.velocity.y += gravity;
+            }
+        } else {
+            this.velocity.y += gravity / 10;
+            this.speed = 3;
         };
     };
-};
+};// player end
+
+//enemy
+class Enemy {
+    constructor({ x, y, minX, maxX, width, height, speed }) {
+        this.position = {
+            x,
+            y
+        }
+        this.moveZone = {
+            minX: minX,
+            maxX: maxX
+        }
+
+        this.speed = speed;
+        this.img = golemWalk;
+
+        this.width = width;
+        this.height = height;
+        this.frameX = 0;
+        this.frameY = 0;
+        this.Dx = 64;
+        this.Dy = 64;
+
+    }
+
+    moveLeft() {
+        this.frameY = 1;
+        this.Dy = 64;
+        this.img = golemWalk;
+        this.position.x -= this.speed;
+    }
+
+    moveRight() {
+        this.frameY = 3;
+        this.Dy = 64;
+        this.img = golemWalk;
+        this.position.x += this.speed;
+    }
+    atcToLeft() {
+        this.frameY = 1;
+        this.img = golemAtk;
+        this.Dy = 96;
+
+        if (this.frameX == 6) {
+            let snowball = new SnowBall({ x: this.position.x, y: this.position.y, direction: "left" })
+            snowBalls.push(snowball);
+        }
+
+    }
+    atcToRight() {
+        this.frameY = 3;
+        this.img = golemAtk
+        this.Dy = 96;
+        if (this.frameX == 6) {
+            let snowball = new SnowBall({ x: this.position.x, y: this.position.y, direction: "right" })
+            snowBalls.push(snowball);
+        }
+    }
+
+    direction() {
+        //Math.abs(player.position.x - this.position.x) <= 30
+        // left 
+        if (player.position.x + (player.width / 2) >= this.position.x
+            && player.position.x <= this.position.x + (this.width / 2)) {
+            this.frameY = 0;
+        }
+        else if (player.position.x < this.position.x) {
+            if (player.position.x - this.position.x <= -500 && this.position.x >= this.moveZone.minX) {
+                this.moveLeft();
+            }
+            else if (player.position.x - this.position.x > -500) {
+                this.atcToLeft();
+            } else { // eğer player uzaklaşırsa top firlatmayı bırak
+                this.img = golemWalk;
+                this.Dy = 64;
+                this.frameY = 1;
+                this.frameX = 0;
+            };
+        }
+        // right
+        else if (player.position.x > this.position.x) {
+            if (player.position.x - this.position.x >= 500 && this.position.x < this.moveZone.maxX) {
+                this.moveRight();
+            }
+
+            else if (player.position.x - this.position.x < 500) {
+                this.atcToRight();
+            } else { // eğer player uzaklaşırsa top firlatmayı bırak
+                this.img = golemWalk;
+                this.Dy = 64;
+                this.frameY = 3;
+                this.frameX = 0;
+            };
+        };
+    };
+
+    draw() {
+        c.drawImage(this.img, this.Dx * this.frameX, this.Dy * this.frameY, this.Dx, this.Dy, this.position.x, this.position.y, this.width, this.height)
+    };
+    ubdate() {
+        this.frameX++;
+        if (this.frameX > 6) {
+            this.frameX = 0;
+        };
+        this.direction();
+        this.draw();
+    };
+};//enemy end
 
 class Platform {
     constructor({ x, y, width, height, platform, collision }) {
@@ -296,13 +436,50 @@ class Axe {
     };
 };
 
-let player = new Player();
+class SnowBall {
+    constructor({ x, y, direction }) {
+        this.position = {
+            x,
+            y
+        };
+        this.velocity = {
+            x: 13,
+            y: 0
+        };
+        this.width = 32;
+        this.height = 32;
+        this.direction = direction;
+        this.remove = false;
+    };
+    draw() {
+        c.drawImage(snowBallImg, this.position.x, this.position.y, this.width, this.height);
+    };
+
+    ubdate() {
+        if (this.direction === "left") {
+            this.position.x -= this.velocity.x;
+        } else if (this.direction === "right") {
+            this.position.x += this.velocity.x;
+        };
+        if (this.remove) {
+            snowBalls.pop();
+        };
+        // gravity 
+        this.position.y += this.velocity.y / 2;
+        this.velocity.y += gravity;
+        this.draw();
+    };
+};
+
+//let player = new Player();
 let platforms = [];
 let trees = [];
 let background = [];
 let decoration = [];
 let result = [];
 let axes = [];
+let goblins = [];
+let snowBalls = [];
 
 const keys = {
     last: null,
@@ -322,10 +499,17 @@ const keys = {
         pressed: false,
     },
     throwKauni: false,
+    b: {
+        pressed: false,
+    },
 };
 
 let init = () => {
     player = new Player();
+    let goblin1 = new Enemy({ x: 3000, y: 365, minX: 2800, maxX: 3700, width: 150, height: 150, speed: 3 });
+    let goblin2 = new Enemy({ x: 1300, y: 365, minX: 1100, maxX: 2100, width: 150, height: 150, speed: 3 });
+    goblins.push(goblin1)
+    goblins.push(goblin2)
 
     axes = [];
 
@@ -544,6 +728,10 @@ let animate = () => {
     // draw the player
     player.update();
 
+    goblins.forEach((goblin) => {
+        goblin.ubdate();
+    });
+
     axes.forEach((axe) => {
         axe.update();
     });
@@ -551,6 +739,10 @@ let animate = () => {
     // draw platforms
     result.forEach((platform) => {
         platform.draw();
+    });
+
+    snowBalls.forEach((ball) => {
+        ball.ubdate();
     });
 
     // right and left movement
@@ -588,6 +780,16 @@ let animate = () => {
                 axes.forEach((axe) => {
                     axe.position.x -= player.speed
                 });
+
+                snowBalls.forEach((ball) => {
+                    ball.position.x -= player.speed
+                });
+
+                goblins.forEach((goblin) => {
+                    goblin.position.x -= player.speed;
+                    goblin.moveZone.maxX -= player.speed;
+                    goblin.moveZone.minX -= player.speed;
+                });
             };
         }
         else if (keys.left.pressed && scrollOfset > 0) {
@@ -611,13 +813,28 @@ let animate = () => {
             axes.forEach((axe) => {
                 axe.position.x += player.speed
             });
+
+            snowBalls.forEach((ball) => {
+                ball.position.x += player.speed
+            });
+
+            goblins.forEach((goblin) => {
+                goblin.position.x += player.speed;
+                goblin.moveZone.maxX += player.speed;
+                goblin.moveZone.minX += player.speed;
+            });
         };
     };
 
+    if (player.firtsLanding == false) {
+        player.glide();
+    };
 
-    if (keys.right.pressed == false && keys.left.pressed == false && keys.up.pressed == false) {
+    if (keys.right.pressed == false && keys.left.pressed == false &&
+        keys.up.pressed == false && keys.b.pressed == false
+        && player.firtsLanding == true) {
         player.idel();
-    }
+    };
 
     if (keys.up.pressed == true) {
         player.jump();
@@ -642,6 +859,10 @@ let animate = () => {
         };
     };
 
+    if (keys.b.pressed) {
+        player.attack();
+    };
+
     // collision detection
     result.forEach((platform) => {
         if (platform.collision) {
@@ -657,6 +878,7 @@ let animate = () => {
                 player.velocity.y = 0;
                 player.velocity.stopy = true;
                 player.onGround = true;
+                player.firtsLanding = true;
             };
             // collusion for the corner of ground
             if (player.position.x <= platform.position.x + platform.width
@@ -667,13 +889,19 @@ let animate = () => {
             };
             // axe
             axes.forEach((axe) => {
-                if (axe.position.y + axe.height >= platform.position.y
-                    && axe.position.x + axe.width >= platform.position.x
-                    && axe.position.x <= platform.position.x + platform.width) {
+                if (axe.position.y + axe.height - 20 >= platform.position.y
+                    && axe.position.x + axe.width - 15 >= platform.position.x
+                    && axe.position.x + 15 <= platform.position.x + platform.width) {
                     axe.velocity.x = 0;
                     axe.velocity.y = 0;
                     axe.noSpin = true;
-                    axe.stick = true;
+                };
+            });
+
+            // snow balls
+            snowBalls.forEach((ball) => {
+                if (ball.position.y + ball.height / 2 >= platform.position.y) {
+                    snowBalls.shift(ball)
                 };
             });
         };
@@ -685,6 +913,7 @@ let animate = () => {
     };
     // lose senarion
     if (player.position.y > canvas.height) {
+        goblins = [];
         init();
     };
 }// animate
@@ -714,6 +943,9 @@ addEventListener("keydown", ({ keyCode }) => {
             keys.space.pressed = true;
             keys.throwKauni = true;
             break
+        case 66:
+            keys.b.pressed = true;
+            break
     };
 });
 
@@ -723,7 +955,7 @@ addEventListener("keyup", ({ keyCode }) => {
             keys.left.pressed = false;
             break
         case 40:
-            console.log("down");
+            console.log("max" + goblin.moveZone.maxX + "\n" + "curent" + goblin.position.x);
             break
         case 39:
             keys.right.pressed = false;
@@ -733,6 +965,9 @@ addEventListener("keyup", ({ keyCode }) => {
             break
         case 32:
             keys.space.pressed = false;
+            break
+        case 66:
+            keys.b.pressed = false;
             break
     };
 });
