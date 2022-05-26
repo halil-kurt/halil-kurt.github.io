@@ -122,7 +122,8 @@ class Player {
         };
         this.onGround = false;
         this.firtsLanding = false;
-        this.life = 20;
+        this.life = 10;
+        this.numberOfAxe = 10;
 
         this.speed = 10;
         this.width = 100;
@@ -131,6 +132,7 @@ class Player {
         this.frameY = 0;
         this.Dx = 0;
         this.Dy = 152;
+        this.timer = 0;
     };
 
     idel() {
@@ -147,15 +149,14 @@ class Player {
         };
     };
 
-    moveLeft() {
-        this.Dx = 120;
-        this.frameY = 5;
+    move() {
         this.frameX++;
-    };
-    moveRight() {
         this.Dx = 120;
-        this.frameY = 4;
-        this.frameX++;
+        if (keys.last === "left") {
+            this.frameY = 5;
+        } else {
+            this.frameY = 4;
+        };
     };
 
     jump() {
@@ -213,8 +214,7 @@ class Player {
         };
         if (this.frameX == 9) {
             // game over
-            goblins = [];
-            init();
+            gameOver();
         };
     };
 
@@ -227,6 +227,8 @@ class Player {
             this.frameX = 0;
         };
         if (this.life < 0) {
+            fps = 4;
+            startAnimating(fps);
             this.die();
         };
 
@@ -263,6 +265,7 @@ class Enemy {
         this.img = golemWalk;
         this.life = 10;
         this.dead = false;
+        this.timer = 2;
 
         this.width = width;
         this.height = height;
@@ -289,7 +292,7 @@ class Enemy {
         this.img = golemAtk;
         this.Dy = 96;
 
-        if (this.frameX == 6) {
+        if (this.frameX == 3) {
             let snowball = new SnowBall({ x: this.position.x, y: this.position.y, direction: "left" });
             snowBalls.push(snowball);
         };
@@ -299,7 +302,7 @@ class Enemy {
         this.frameY = 3;
         this.img = golemAtk
         this.Dy = 96;
-        if (this.frameX == 6) {
+        if (this.frameX == 3) {
             let snowball = new SnowBall({ x: this.position.x, y: this.position.y, direction: "right" });
             snowBalls.push(snowball);
         };
@@ -316,11 +319,15 @@ class Enemy {
             this.dead = true;
             this.die();
         }
-        //left
+
         else if (player.position.x + (player.width / 2) >= this.position.x
             && player.position.x <= this.position.x + (this.width / 2)) {
             this.frameY = 0;
+            if (player.position.y + player.height > this.position.x && this.frameX == 4) {
+                player.life--;
+            };
         }
+        // left
         else if (player.position.x < this.position.x) {
             if (player.position.x - this.position.x <= -500 && this.position.x >= this.moveZone.minX) {
                 this.moveLeft();
@@ -355,15 +362,22 @@ class Enemy {
         c.drawImage(this.img, this.Dx * this.frameX, this.Dy * this.frameY, this.Dx, this.Dy, this.position.x, this.position.y, this.width, this.height)
     };
     ubdate() {
-        if (this.dead === false) {
-            this.frameX++;
-        } else {
-            this.frameX = 6;
+        if (this.timer % 2 == 0) {
+            if (this.dead === false) {
+                this.frameX++;
+            } else {
+                this.frameX = 6;
+            };
+            if (this.frameX > 6) {
+                this.frameX = 0;
+            };
+            this.direction();
         };
-        if (this.frameX > 6) {
-            this.frameX = 0;
+
+        this.timer++;
+        if (this.timer > 11) {
+            this.timer = 2;
         };
-        this.direction();
         this.draw();
     };
 };//enemy end
@@ -372,7 +386,7 @@ class Platform {
     constructor({ x, y, width, height, platform, collision }) {
         this.position = {
             x,
-            y // y: y
+            y
         }
         this.platform = platform;
         this.width = width;
@@ -540,8 +554,8 @@ const keys = {
 
 let init = () => {
     player = new Player();
-    let goblin1 = new Enemy({ x: 3000, y: 365, minX: 2800, maxX: 3700, width: 150, height: 150, speed: 3 });
-    let goblin2 = new Enemy({ x: 1300, y: 365, minX: 1100, maxX: 2100, width: 150, height: 150, speed: 3 });
+    let goblin1 = new Enemy({ x: 3000, y: 365, minX: 2800, maxX: 3700, width: 150, height: 150, speed: 7 });
+    let goblin2 = new Enemy({ x: 1300, y: 365, minX: 1100, maxX: 2100, width: 150, height: 150, speed: 7 });
     goblins.push(goblin1)
     goblins.push(goblin2)
 
@@ -746,6 +760,12 @@ let init = () => {
 init();
 
 let fps = 40, fpsInterval, startTime, now, then, elapsed;
+function gameOver() {
+    fps = 30;
+    startAnimating(fps);
+    goblins = [];
+    init();
+};
 function startAnimating(fps) {
     // fps ayarlama
     fpsInterval = 1000 / fps;
@@ -799,11 +819,11 @@ let animate = () => {
             || keys.right.pressed && scrollOfset > 5097
             && player.position.x < 1340) {
             player.velocity.x = player.speed;
-            player.moveRight();
+            player.move();
         } else if (keys.left.pressed && player.position.x > 100
             || keys.left.pressed && scrollOfset === 0
             && player.position.x > 0) {
-            player.moveLeft();
+            player.move();
             player.velocity.x = - player.speed;
         } else {
             player.velocity.x = 0;
@@ -811,8 +831,7 @@ let animate = () => {
                 // move the platform to the left
                 if (scrollOfset < 5100) {
                     scrollOfset += player.speed;
-
-                    player.moveRight();
+                    player.move();
 
                     result.forEach((platform) => {
                         platform.position.x -= player.speed;
@@ -844,8 +863,7 @@ let animate = () => {
             else if (keys.left.pressed && scrollOfset > 0) {
                 // move the platform to the right
                 scrollOfset -= player.speed;
-
-                player.moveLeft();
+                player.move();
 
                 result.forEach((platform) => {
                     platform.position.x += player.speed;
@@ -896,15 +914,18 @@ let animate = () => {
             player.throw()
         }
 
-        if (keys.throwKauni) {
+        if (keys.throwAxe) {
             let direction = "right";
-            if (axes.length < 10) {
+            if (player.numberOfAxe > 0) {
                 if (keys.last == "left") {
                     direction = "left";
                 };
-                let axe = new Axe({ x: player.position.x + (player.width / 2), y: player.position.y, direction: direction })
-                axes.push(axe);
-                keys.throwKauni = false;
+                if (player.frameX == 2) {
+                    let axe = new Axe({ x: player.position.x + (player.width / 2), y: player.position.y, direction: direction })
+                    axes.push(axe);
+                    keys.throwAxe = false;
+                    player.numberOfAxe--;
+                };
             };
         };
 
@@ -967,16 +988,16 @@ let animate = () => {
         // eğer balta göbline çarparsa
         goblins.forEach((goblin) => {
             axes.forEach((axe) => {
-                if (axe.noSpin === false
-                    && goblin.dead == false
+                if (
+                    goblin.dead == false
                     // yatay
                     && axe.position.x + axe.width >= goblin.position.x + goblin.width / 2
                     && axe.position.x <= goblin.position.x + goblin.width / 2
                     // dikey
                     && axe.position.y + axe.width >= goblin.position.y
                 ) {
+                    axes.shift();
                     axe.noSpin = true;
-                    axes.pop();
                     goblin.life -= 1;
                 };
             });
@@ -996,8 +1017,7 @@ let animate = () => {
         };
         // lose senarion
         if (player.position.y > canvas.height) {
-            goblins = [];
-            init();
+            gameOver();
         };
     };
 };// animate
@@ -1023,7 +1043,7 @@ addEventListener("keydown", ({ keyCode }) => {
             break
         case 32:
             keys.space.pressed = true;
-            keys.throwKauni = true;
+            keys.throwAxe = true;
             break
         case 66:
             keys.b.pressed = true;
