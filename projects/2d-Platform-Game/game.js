@@ -89,7 +89,7 @@ sign2.src = "wintertileset/Object/Sign_2.png";
 
 // sprite
 let spriteImg = new Image();
-spriteImg.src = "wintertileset/sprite/sprite9.png";
+spriteImg.src = "wintertileset/sprite/sprite10.png";
 
 let axeImg = new Image();
 axeImg.src = "wintertileset/sprite/axe_spin.png";
@@ -99,6 +99,9 @@ golemWalk.src = "wintertileset/sprite/golem-walk.png";
 
 let golemAtk = new Image();
 golemAtk.src = "wintertileset/sprite/golem-atk.png";
+
+let golemDie = new Image();
+golemDie.src = "wintertileset/sprite/golem-die.png";
 
 let snowBallImg = new Image();
 snowBallImg.src = "wintertileset/sprite/snowball.png";
@@ -119,6 +122,7 @@ class Player {
         };
         this.onGround = false;
         this.firtsLanding = false;
+        this.life = 20;
 
         this.speed = 10;
         this.width = 100;
@@ -200,6 +204,20 @@ class Player {
         };
     };
 
+    die() {
+        this.Dx = 164;
+        if (keys.last === "left") {
+            this.frameY = 15;
+        } else {
+            this.frameY = 14;
+        };
+        if (this.frameX == 9) {
+            // game over
+            goblins = [];
+            init();
+        };
+    };
+
     draw() {
         c.drawImage(spriteImg, this.Dx * this.frameX, this.Dy * this.frameY, this.Dx, this.Dy, this.position.x, this.position.y, this.width, this.height)
     };
@@ -207,6 +225,9 @@ class Player {
     update() {
         if (this.frameX > 9) {
             this.frameX = 0;
+        };
+        if (this.life < 0) {
+            this.die();
         };
 
         this.draw();
@@ -231,15 +252,17 @@ class Enemy {
     constructor({ x, y, minX, maxX, width, height, speed }) {
         this.position = {
             x,
-            y
-        }
+            y: canvas.height - 266,
+        };
         this.moveZone = {
             minX: minX,
             maxX: maxX
-        }
+        };
 
         this.speed = speed;
         this.img = golemWalk;
+        this.life = 10;
+        this.dead = false;
 
         this.width = width;
         this.height = height;
@@ -248,46 +271,53 @@ class Enemy {
         this.Dx = 64;
         this.Dy = 64;
 
-    }
-
+    };
     moveLeft() {
         this.frameY = 1;
         this.Dy = 64;
         this.img = golemWalk;
         this.position.x -= this.speed;
-    }
-
+    };
     moveRight() {
         this.frameY = 3;
         this.Dy = 64;
         this.img = golemWalk;
         this.position.x += this.speed;
-    }
+    };
     atcToLeft() {
         this.frameY = 1;
         this.img = golemAtk;
         this.Dy = 96;
 
         if (this.frameX == 6) {
-            let snowball = new SnowBall({ x: this.position.x, y: this.position.y, direction: "left" })
+            let snowball = new SnowBall({ x: this.position.x, y: this.position.y, direction: "left" });
             snowBalls.push(snowball);
-        }
+        };
 
-    }
+    };
     atcToRight() {
         this.frameY = 3;
         this.img = golemAtk
         this.Dy = 96;
         if (this.frameX == 6) {
-            let snowball = new SnowBall({ x: this.position.x, y: this.position.y, direction: "right" })
+            let snowball = new SnowBall({ x: this.position.x, y: this.position.y, direction: "right" });
             snowBalls.push(snowball);
-        }
-    }
+        };
+    };
+    die() {
+        this.img = golemDie;
+        this.Dx = 64;
+        this.Dy = 64;
+        this.frameY = 0;
+    };
 
     direction() {
-        //Math.abs(player.position.x - this.position.x) <= 30
-        // left 
-        if (player.position.x + (player.width / 2) >= this.position.x
+        if (this.life <= 0) {
+            this.dead = true;
+            this.die();
+        }
+        //left
+        else if (player.position.x + (player.width / 2) >= this.position.x
             && player.position.x <= this.position.x + (this.width / 2)) {
             this.frameY = 0;
         }
@@ -325,7 +355,11 @@ class Enemy {
         c.drawImage(this.img, this.Dx * this.frameX, this.Dy * this.frameY, this.Dx, this.Dy, this.position.x, this.position.y, this.width, this.height)
     };
     ubdate() {
-        this.frameX++;
+        if (this.dead === false) {
+            this.frameX++;
+        } else {
+            this.frameX = 6;
+        };
         if (this.frameX > 6) {
             this.frameX = 0;
         };
@@ -471,7 +505,7 @@ class SnowBall {
     };
 };
 
-//let player = new Player();
+
 let platforms = [];
 let trees = [];
 let background = [];
@@ -708,8 +742,8 @@ let init = () => {
 
     // platforms Curent x position
     scrollOfset = 0;
+};
 
-}
 let animate = () => {
     requestAnimationFrame(animate);
     c.fillStyle = "white";
@@ -728,9 +762,6 @@ let animate = () => {
     // draw the player
     player.update();
 
-    goblins.forEach((goblin) => {
-        goblin.ubdate();
-    });
 
     axes.forEach((axe) => {
         axe.update();
@@ -743,6 +774,10 @@ let animate = () => {
 
     snowBalls.forEach((ball) => {
         ball.ubdate();
+    });
+
+    goblins.forEach((goblin) => {
+        goblin.ubdate();
     });
 
     // right and left movement
@@ -861,6 +896,14 @@ let animate = () => {
 
     if (keys.b.pressed) {
         player.attack();
+        goblins.forEach((goblin) => {
+            if (player.position.x + player.width >= goblin.position.x
+                && player.position.x <= goblin.position.x + goblin.width
+                && player.frameX == 9
+            ) {
+                goblin.life--;
+            };
+        });
     };
 
     // collision detection
@@ -907,6 +950,32 @@ let animate = () => {
         };
     });
 
+    // eğer balta göbline çarparsa
+    goblins.forEach((goblin) => {
+        axes.forEach((axe) => {
+            if (axe.noSpin === false
+                && goblin.dead == false
+                // yatay
+                && axe.position.x + axe.width >= goblin.position.x + goblin.width / 2
+                && axe.position.x <= goblin.position.x + goblin.width / 2
+                // dikey
+                && axe.position.y + axe.width >= goblin.position.y
+            ) {
+                axe.noSpin = true;
+                axes.pop();
+                goblin.life -= 1;
+            };
+        });
+    });
+    // düşman birşey firlatırsa
+    snowBalls.forEach((ball) => {
+        if (ball.position.x + ball.width >= player.position.x
+            && ball.position.x <= player.position.x + player.width) {
+            player.life--;
+            snowBalls.shift(ball);
+        };
+    });
+
     // win senario
     if (scrollOfset > 4000) {
         //console.log("you win");
@@ -916,7 +985,7 @@ let animate = () => {
         goblins = [];
         init();
     };
-}// animate
+};// animate
 
 init();
 animate();
@@ -955,7 +1024,7 @@ addEventListener("keyup", ({ keyCode }) => {
             keys.left.pressed = false;
             break
         case 40:
-            console.log("max" + goblin.moveZone.maxX + "\n" + "curent" + goblin.position.x);
+            console.log(player.life);
             break
         case 39:
             keys.right.pressed = false;
