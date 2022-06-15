@@ -89,6 +89,15 @@ sign1.src = "wintertileset/Object/Sign_1.png";
 const sign2 = new Image();
 sign2.src = "wintertileset/Object/Sign_2.png";
 
+const Crate = new Image();
+Crate.src = "wintertileset/Object/Crate.png";
+
+const Crystal = new Image();
+Crystal.src = "wintertileset/Object/Crystal.png";
+
+const IceBox = new Image();
+IceBox.src = "wintertileset/Object/IceBox.png";
+
 // sprite
 const spriteImg = new Image();
 spriteImg.src = "wintertileset/sprite/sprite10.png";
@@ -111,17 +120,24 @@ snowBallImg.src = "wintertileset/sprite/snowball.png";
 //buttons
 const left = new Image();
 left.src = "wintertileset/buttons/left.png";
+
 const right = new Image();
 right.src = "wintertileset/buttons/right.png";
+
 const sword = new Image();
 sword.src = "wintertileset/buttons/sword.png";
+
 const axe = new Image();
 axe.src = "wintertileset/buttons/axe.png";
+
 const jump = new Image();
 jump.src = "wintertileset/buttons/jump.png";
 
 let screenWidth = window.screen.width;
 let divider = screenWidth / 1100;
+if (screenWidth <= 425) {
+    divider = screenWidth / 900;
+}
 
 // create player
 class Player {
@@ -583,7 +599,14 @@ let handlePosition = (list, decoration, goblins, minY) => {
     });
 };
 
-
+let controleInfo = (x, y) => {
+    // kontoller hakkında kullanıcıya bilgi ver.
+    c.font = "30px Arial";
+    c.strokeText("left: A, right: D", x, y);
+    c.strokeText("jump: W", x, y + 30);
+    c.strokeText("sword: E", x, y + 60);
+    c.strokeText("throw: Space", x, y + 90);
+};
 
 const keys = {
     last: null,
@@ -603,7 +626,7 @@ const keys = {
         pressed: false,
     },
     throwKauni: false,
-    b: {
+    e: {
         pressed: false,
     },
 };
@@ -791,12 +814,15 @@ let init = () => {
         };
     };
     decoration = [
-        { x: 10, y: canvas.height - 325, width: 511, height: 201, obj: lgloo2, type: Decoration },
-        { x: 560, y: canvas.height - 210, width: 87, height: 93, obj: sign2, type: Decoration },
-        { x: 2800, y: canvas.height - 231, width: 96, height: 105, obj: snowMan, type: Decoration },
-        { x: 4340, y: canvas.height - 165, width: 62, height: 39, obj: stone, type: Decoration },
-        { x: 5790, y: canvas.height - 210, width: 87, height: 94, obj: sign1, type: Decoration },
-        { x: 5950, y: canvas.height - 325, width: 511, height: 201, obj: lgloo1, type: Decoration },
+        { x: 10, y: null, width: 511, height: 201, obj: lgloo2, type: Decoration },
+        { x: 560, y: null, width: 87, height: 93, obj: sign2, type: Decoration },
+        { x: 2000, y: null, width: 50, height: 50, obj: IceBox, type: Decoration },
+        { x: 2800, y: null, width: 96, height: 105, obj: snowMan, type: Decoration },
+        { x: 4700, y: null, width: 50, height: 50, obj: Crate, type: Decoration },
+        { x: 4340, y: null, width: 62, height: 39, obj: stone, type: Decoration },
+        { x: 5790, y: null, width: 87, height: 94, obj: sign1, type: Decoration },
+        { x: 5950, y: null, width: 511, height: 201, obj: lgloo1, type: Decoration },
+        { x: 6050, y: null, width: 97, height: 78, obj: Crystal, type: Decoration },
     ];
 
     background = new Background({ x: 0, y: 0, backround });
@@ -833,7 +859,6 @@ let init = () => {
     // oyunu responsive hale getir.
     endOfGame = lastPlatform.position.x + lastPlatform.width;
 };
-
 init();
 
 let fps = 25, fpsInterval, startTime, now, then, elapsed;
@@ -888,11 +913,15 @@ let animate = () => {
             });
         };
 
+        if (screenWidth > 768 && scrollOfset < 200) {
+            controleInfo(10, 50);
+        };
+
         // right and left movement
         player.speed *= divider;
-        if (keys.right.pressed && player.position.x < screenWidth * (33 / 100)
+        if (keys.right.pressed && player.position.x < screenWidth * 0.33
             || keys.right.pressed && scrollOfset > endOfGame - screenWidth
-            && player.position.x < screenWidth * (90 / 100)) {
+            && player.position.x < screenWidth * 0.9) {
             player.velocity.x = player.speed;
             player.move();
         } else if (keys.left.pressed && player.position.x > 100
@@ -975,7 +1004,7 @@ let animate = () => {
         };
 
         if (keys.right.pressed == false && keys.left.pressed == false &&
-            keys.up.pressed == false && keys.b.pressed == false
+            keys.up.pressed == false && keys.e.pressed == false
             && player.firtsLanding == true) {
             player.idel();
         };
@@ -998,7 +1027,7 @@ let animate = () => {
                     direction = "left";
                 };
                 if (player.frameX == 2) {
-                    let axe = new Axe({ x: player.position.x + (player.width / 2), y: player.position.y, direction: direction })
+                    let axe = new Axe({ x: player.position.x + (player.width * 0.5), y: player.position.y, direction: direction })
                     axes.push(axe);
                     keys.throwAxe = false;
                     player.numberOfAxe--;
@@ -1006,7 +1035,7 @@ let animate = () => {
             };
         };
 
-        if (keys.b.pressed) {
+        if (keys.e.pressed) {
             player.attack();
             objects.forEach((obj) => {
                 if (obj.constructor.name === "Enemy") {
@@ -1118,51 +1147,43 @@ startAnimating(fps);
 
 addEventListener("keydown", ({ keyCode }) => {
     switch (keyCode) {
-        case 37:
+        case 65:
             keys.left.pressed = true;
             keys.last = "left";
             break
-        case 40:
-            // if (player.velocity.stopy) {
-            //     player.velocity.y += 0;
-            // }
-            break
-        case 39:
+        case 68:
             keys.right.pressed = true;
             keys.last = "right";
             break
-        case 38:
+        case 87:
             keys.up.pressed = true;
             break
         case 32:
             keys.space.pressed = true;
             keys.throwAxe = true;
             break
-        case 66:
-            keys.b.pressed = true;
+        case 69:
+            keys.e.pressed = true;
             break
     };
 });
 
 addEventListener("keyup", ({ keyCode }) => {
     switch (keyCode) {
-        case 37:
+        case 65:
             keys.left.pressed = false;
             break
-        case 40:
-            console.log(screenWidth);
-            break
-        case 39:
+        case 68:
             keys.right.pressed = false;
             break
-        case 38:
+        case 87:
             keys.up.pressed = false;
             break
         case 32:
             keys.space.pressed = false;
             break
-        case 66:
-            keys.b.pressed = false;
+        case 69:
+            keys.e.pressed = false;
             break
     };
 });
@@ -1204,7 +1225,7 @@ let handleTouch = (event) => {
                 keys.throwAxe = true;
                 break
             case "sword":
-                keys.b.pressed = true;
+                keys.e.pressed = true;
                 break
         };
     };
@@ -1212,7 +1233,7 @@ let handleTouch = (event) => {
         keys.up.pressed = false;
         keys.left.pressed = false;
         keys.right.pressed = false;
-        keys.b.pressed = false;
+        keys.e.pressed = false;
         keys.space.pressed = false;
     };
 };
